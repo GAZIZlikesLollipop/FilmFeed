@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">FilmFeed</string>
+    <string-array name="base_routes">
+        <item>Main</item>
+        <item>Catalog</item>
+        <item>My</item>
+        <item>Search</item>
+    </string-array>
+</resources>
