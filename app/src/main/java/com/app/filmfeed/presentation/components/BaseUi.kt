@@ -1,27 +1,38 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.app.filmfeed.presentation.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ViewList
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.ViewList
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -37,7 +48,7 @@ fun BaseScreen(movieViewModel: MovieViewModel){
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     Scaffold(
         topBar = {
-            BaseTopBar()
+            BaseTopBar(navController)
         },
         bottomBar = {
             if(
@@ -59,8 +70,49 @@ fun BaseScreen(movieViewModel: MovieViewModel){
 }
 
 @Composable
-fun BaseTopBar(){
+fun BaseTopBar(
+    navController: NavController
+){
+    val ams = stringArrayResource(R.array.base_routes)
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+    val name = when(currentRoute){
+        Route.Main.route -> ams[0]
+        Route.Catalog.route -> ams[1]
+        Route.My.route -> ams[2]
+        else -> ams[3]
+    }
+    val barColor by animateColorAsState(
+        targetValue =
+            if(
+                currentRoute != Route.Main.route ||
+                currentRoute != Route.Catalog.route ||
+                currentRoute != Route.My.route ||
+                currentRoute != Route.Search.route
+            ) Color.Transparent else MaterialTheme.colorScheme.surfaceContainer,
 
+    )
+    TopAppBar(
+        title = {
+            Text(
+                text = name,
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = {navController.navigate(Route.Main.route)}
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = "Back",
+
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(barColor)
+    )
 }
 
 data class BarItem(
@@ -82,7 +134,7 @@ fun BaseBottomBar(
         ),
         BarItem(
             name = names[1],
-            icon = Icons.Rounded.ViewList,
+            icon = Icons.AutoMirrored.Rounded.ViewList,
             route = Route.Catalog.route
         ),
         BarItem(
@@ -104,7 +156,7 @@ fun BaseBottomBar(
                 onClick = { if(currentRoute != it.route)navController.navigate(it.route) },
                 icon = {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(3.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
                         Icon(

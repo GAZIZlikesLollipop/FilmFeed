@@ -28,7 +28,7 @@ fun Navigation(
         startDestination = Route.Main.route
     ){
         composable(Route.Main.route){
-            MainScreen()
+            MainScreen(movieViewModel,padding,navController)
         }
         composable(Route.Catalog.route){
             CatalogScreen()
@@ -43,7 +43,7 @@ fun Navigation(
             route = Route.AboutMovie.route,
             arguments = listOf(navArgument("id"){NavType.LongType})
         ){
-            AboutScreen(it.arguments?.getLong("it") ?: 0)
+            AboutScreen(it.arguments?.getLong("it") ?: 0,padding)
         }
         composable(
             route = Route.Movie.route,

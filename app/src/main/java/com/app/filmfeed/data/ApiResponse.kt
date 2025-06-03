@@ -1,39 +1,44 @@
 package com.app.filmfeed.data
 
 enum class MovieCategories {
-    Drama,
-    Fantasy,
-    Action,
-    Comedy,
-    Crime,
-    Documentary,
-    History,
-    Horror,
-    Musical,
-    Mystery,
-    Romance,
-    ScienceFiction,
-    Thriller,
-    Sport,
+    Action, // Драма
+    Mystery, // Мистика
+    Romance, // Романтика
+    Sport, // Спорт
+    Biographical, // Биографический
+    Family, // Семейный
+    War, // Война
+    Western, // Октябрьская
+    Biography, // Биография
+    Animation, // Анимация
+    Musical, // Музыкальный
+    Documentary, // Документальный
+    History, // Исторический
+    Fantasy, // Фэнтези
+    Horror, // Ужасы
+    ScienceFiction, // Научная фантастика
+    Comedy, // Комедия
+    Crime, // Преступление
+    Thriller, // Триллер
+    Drama, // Драма
     Adventure,
-    Biographical,
-    Animation
+    MeloDrama
 }
 
 data class MovieItem(
     val id: Long,
     val name: String,
-    val promoPoster: String,
+    val poster: String,
+    val movieUrl: String,
+    val duration: Int,
+    val age: Int,
     val categories: List<MovieCategories>,
     val rating: Double,
-    val userRating: Double,
     val reviews: Long,
-    val isWatched: Boolean,
     val description: String,
     val country: String,
     val createdYear: Int,
     val members: List<MovieMember>,
-    val views: Long
 )
 
 data class MovieMember(
@@ -42,5 +47,17 @@ data class MovieMember(
     val featuredFilms: List<MovieItem>,
     val photo: String,
     val role: String,
-    val age: Int
+    val date: String
+)
+
+data class User(
+    val id: Long,
+    val name: String,
+    val watchedFilms: Map<MovieItem, UserMovies>
+)
+
+data class UserMovies(
+    val rating: Double,
+    val isWatched: Boolean,
+    val isInMy: Boolean
 )
