@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.app.filmfeed.Route
 import com.app.filmfeed.getMovs
 import com.app.filmfeed.presentation.MovieViewModel
 import com.app.filmfeed.presentation.components.MovieCard
@@ -36,7 +37,7 @@ fun MainScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 items(getMovs()){
-                    MovieCard(it,navController)
+                    MovieCard(it){ navController.navigate(Route.AboutMovie.createRoute(it.id)) }
                 }
             }
         }

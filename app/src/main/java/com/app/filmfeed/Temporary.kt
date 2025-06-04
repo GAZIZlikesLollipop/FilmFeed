@@ -65,17 +65,7 @@ fun getMovs(): List<MovieItem> {
             categories = listOf(MovieCategories.Drama, MovieCategories.Thriller),
             rating = 8.7,
             reviews = 1133103,
-            description = """
-                    An insurance company employee suffers from chronic insomnia and is desperate to escape his 
-                    excruciatingly boring life. One day, on a business trip, he meets a certain Tyler Durden, a 
-                    charismatic soap salesman with a twisted philosophy. Tyler is sure that self-improvement is 
-                    for the weak, and the only thing worth living for is self-destruction.
-
-                    It doesn't take long before the new friends are beating each other up in the parking lot of a 
-                    bar, and the cathartic fistfights give them the highest bliss. Introducing other men to the 
-                    simple joys of physical brutality, they start a secret Fight Club that becomes incredibly 
-                    popular.
-                """,
+            description = "An insurance company employee suffers from chronic insomnia and is desperate to escape his excruciatingly boring life. One day, on a business trip, he meets a certain Tyler Durden, a charismatic soap salesman with a twisted philosophy. Tyler is sure that self-improvement is for the weak, and the only thing worth living for is self-destruction.\n\n It doesn't take long before the new friends are beating each other up in the parking lot of a bar, and the cathartic fistfights give them the highest bliss. Introducing other men to the simple joys of physical brutality, they start a secret Fight Club that becomes incredibly popular.",
             country = "USA",
             createdYear = 1999,
             members = listOf(members[0], members[1]),
@@ -129,7 +119,7 @@ fun getMovs(): List<MovieItem> {
             toward disaster, their bond is tested by the chaos of the night, the cold sea, and the 
             ultimate sacrifice of those who dared to defy the fate of the iceberg. The film is a sweeping 
             tale of hope, heartbreak, and the enduring power of love in the face of death.
-        """,
+            """,
             country = "USA",
             createdYear = 1997,
             members = listOf(members[4], members[5]),

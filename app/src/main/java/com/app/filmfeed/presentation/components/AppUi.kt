@@ -17,18 +17,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
-import com.app.filmfeed.Route
 import com.app.filmfeed.data.MovieItem
 
 @Composable
 fun MovieCard(
     movie: MovieItem,
-    navController: NavController
+    onClick: () -> Unit
 ){
     val context = LocalContext.current
     val request = ImageRequest.Builder(context)
@@ -39,7 +37,7 @@ fun MovieCard(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = Modifier.clickable{navController.navigate(Route.AboutMovie.createRoute(movie.id))}
+        modifier = Modifier.clickable{onClick()}
     ){
         SubcomposeAsyncImage(
             model = request,

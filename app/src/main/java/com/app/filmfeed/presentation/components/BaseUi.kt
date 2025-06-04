@@ -79,7 +79,8 @@ fun BaseTopBar(
         Route.Main.route -> ams[0]
         Route.Catalog.route -> ams[1]
         Route.My.route -> ams[2]
-        else -> ams[3]
+        Route.Search.route -> ams[3]
+        else -> ""
     }
     val barColor by animateColorAsState(
         targetValue =
@@ -89,7 +90,6 @@ fun BaseTopBar(
                 currentRoute != Route.My.route ||
                 currentRoute != Route.Search.route
             ) Color.Transparent else MaterialTheme.colorScheme.surfaceContainer,
-
     )
     TopAppBar(
         title = {
@@ -101,14 +101,16 @@ fun BaseTopBar(
             )
         },
         navigationIcon = {
-            IconButton(
-                onClick = {navController.navigate(Route.Main.route)}
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = "Back",
-
-                )
+            if(currentRoute == Route.AboutMovie.route) {
+                IconButton(
+                    onClick = { navController.navigate(Route.Main.route) }
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                        contentDescription = "Back",
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(barColor)

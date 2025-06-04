@@ -41,27 +41,28 @@ fun Navigation(
         }
         composable(
             route = Route.AboutMovie.route,
-            arguments = listOf(navArgument("id"){NavType.LongType})
-        ){
-            AboutScreen(it.arguments?.getLong("it") ?: 0,padding)
+            arguments = listOf(navArgument("id"){type = NavType.LongType})
+        ){ backStackEntry ->
+            val id = backStackEntry.arguments?.getLong("id") ?: 2
+            AboutScreen(id)
         }
         composable(
             route = Route.Movie.route,
-            arguments = listOf(navArgument("id"){NavType.LongType})
+            arguments = listOf(navArgument("id"){type = NavType.LongType})
         ){
-            MovieScreen(it.arguments?.getLong("it") ?: 0)
+            MovieScreen(it.arguments?.getLong("id") ?: 0)
         }
         composable(
             route = Route.Member.route,
-            arguments = listOf(navArgument("id"){NavType.LongType})
+            arguments = listOf(navArgument("id"){type = NavType.LongType})
         ){
-            MemberScreen(it.arguments?.getLong("it") ?: 0)
+            MemberScreen(it.arguments?.getLong("id") ?: 0)
         }
         composable(
             route = Route.Members.route,
-            arguments = listOf(navArgument("id"){NavType.LongType})
+            arguments = listOf(navArgument("id"){type = NavType.LongType})
         ){
-            MembersScreen(it.arguments?.getLong("it") ?: 0)
+            MembersScreen(it.arguments?.getLong("id") ?: 0)
         }
 
     }
@@ -82,6 +83,6 @@ sealed class Route(val route: String){
         fun createRoute(id: Long) = "members/${id}"
     }
     object AboutMovie: Route("aboutMovie/{id}"){
-        fun createRoute(id: Long) = "aboutMovie/${id}"
+        fun createRoute(id: Long) = "aboutMovie/$id"
     }
 }
