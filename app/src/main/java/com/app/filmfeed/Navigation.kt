@@ -15,7 +15,7 @@ import com.app.filmfeed.presentation.screen.SearchScreen
 import com.app.filmfeed.presentation.screen.member.MemberScreen
 import com.app.filmfeed.presentation.screen.member.MembersScreen
 import com.app.filmfeed.presentation.screen.movie.AboutScreen
-import com.app.filmfeed.presentation.screen.movie.MovieScreen
+import com.app.filmfeed.presentation.screen.movie.WatchMovieScreen
 
 @Composable
 fun Navigation(
@@ -28,7 +28,7 @@ fun Navigation(
         startDestination = Route.Main.route
     ){
         composable(Route.Main.route){
-            MainScreen(movieViewModel,padding,navController)
+            MainScreen(movieViewModel,navController)
         }
         composable(Route.Catalog.route){
             CatalogScreen()
@@ -44,13 +44,13 @@ fun Navigation(
             arguments = listOf(navArgument("id"){type = NavType.LongType})
         ){ backStackEntry ->
             val id = backStackEntry.arguments?.getLong("id") ?: 2
-            AboutScreen(id)
+            AboutScreen(id,navController)
         }
         composable(
-            route = Route.Movie.route,
+            route = Route.WatchMovie.route,
             arguments = listOf(navArgument("id"){type = NavType.LongType})
         ){
-            MovieScreen(it.arguments?.getLong("id") ?: 0)
+            WatchMovieScreen(it.arguments?.getLong("id") ?: 0, movieViewModel)
         }
         composable(
             route = Route.Member.route,
@@ -73,8 +73,8 @@ sealed class Route(val route: String){
     object Catalog: Route("catalog")
     object My: Route("my")
     object Search: Route("search")
-    object Movie: Route("movie/{id}"){
-        fun createRoute(id: Long) = "movie/${id}"
+    object WatchMovie: Route("watchMovie/{id}"){
+        fun createRoute(id: Long) = "watchMovie/${id}"
     }
     object Member: Route("member/{id}"){
         fun createRoute(id: Long) = "member/${id}"

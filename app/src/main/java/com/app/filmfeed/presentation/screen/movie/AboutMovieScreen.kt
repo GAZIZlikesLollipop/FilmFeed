@@ -3,7 +3,7 @@ package com.app.filmfeed.presentation.screen.movie
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -30,24 +30,27 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
+import com.app.filmfeed.Route
 import com.app.filmfeed.getMovs
 
 @Composable
 fun AboutScreen(
-    id: Long
+    id: Long,
+    navController: NavController
 ){
     val movie = getMovs()[id.toInt()]
     val context = LocalContext.current
     val request = ImageRequest.Builder(context)
-        .data(movie.poster)
+        .data(movie.posterURL)
         .diskCachePolicy(CachePolicy.ENABLED)
         .memoryCachePolicy(CachePolicy.ENABLED)
         .build()
-    Box(){
+    Box {
         LazyColumn(
             Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -57,8 +60,8 @@ fun AboutScreen(
                 SubcomposeAsyncImage(
                     model = request,
                     contentDescription = movie.name,
-                    modifier = Modifier.fillMaxWidth().offset(y = (-28).dp),
-                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.Fit,
                     success = { SubcomposeAsyncImageContent() },
                     loading = {
                         Box(
@@ -95,9 +98,11 @@ fun AboutScreen(
                 )
             }
             item {
-                FlowRow(
+                Spacer(Modifier.height(12.dp))
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Row {
                         Icon(
@@ -107,20 +112,18 @@ fun AboutScreen(
                             modifier = Modifier.size(22.dp)
                         )
                         Text(
-                            "${movie.rating}/10 • ",
+                            "${movie.rating}/10 • ${movie.reviews/1000}K",
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
                     Text(
-                        "${movie.duration / 3600} h ${(movie.duration % 3600) / 60} • "
+                        "${movie.duration / 3600} h ${(movie.duration % 3600) / 60} • ${movie.country}"
                     )
                     Text(
-                        "${movie.categories.joinToString()} • "
-                    )
-                    Text(
-                        "${movie.country} • ${movie.reviews}"
+                        movie.categories.joinToString(" • ")
                     )
                 }
+                Spacer(Modifier.height(12.dp))
             }
             item {
                 HorizontalDivider()
@@ -140,8 +143,11 @@ fun AboutScreen(
             contentAlignment = Alignment.BottomCenter
         ){
             Button(
-                onClick = {},
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp).offset(y = (-16).dp)
+                onClick = {navController.navigate(Route.WatchMovie.createRoute(id))},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .offset(y = (-20).dp)
             ) {
                 Text(
                     "Watch"

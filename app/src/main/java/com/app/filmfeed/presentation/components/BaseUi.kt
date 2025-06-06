@@ -85,9 +85,9 @@ fun BaseTopBar(
     val barColor by animateColorAsState(
         targetValue =
             if(
-                currentRoute != Route.Main.route ||
-                currentRoute != Route.Catalog.route ||
-                currentRoute != Route.My.route ||
+                currentRoute != Route.Main.route &&
+                currentRoute != Route.Catalog.route &&
+                currentRoute != Route.My.route &&
                 currentRoute != Route.Search.route
             ) Color.Transparent else MaterialTheme.colorScheme.surfaceContainer,
     )

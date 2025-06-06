@@ -20,14 +20,10 @@ import com.app.filmfeed.presentation.components.MovieCard
 @Composable
 fun MainScreen(
     viewModel: MovieViewModel,
-    paddingValues: PaddingValues,
     navController: NavController
 ){
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .padding(8.dp),
+        modifier = Modifier.fillMaxSize().padding(8.dp),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.SpaceAround
     ){

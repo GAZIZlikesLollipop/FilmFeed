@@ -28,8 +28,8 @@ enum class MovieCategories {
 data class MovieItem(
     val id: Long,
     val name: String,
-    val poster: String,
-    val movieUrl: String,
+    val posterURL: String,
+    val movieURL: String,
     val duration: Int,
     val age: Int,
     val categories: List<MovieCategories>,
@@ -37,7 +37,7 @@ data class MovieItem(
     val reviews: Long,
     val description: String,
     val country: String,
-    val createdYear: Int,
+    val year: Int,
     val members: List<MovieMember>,
 )
 
@@ -59,5 +59,6 @@ data class User(
 data class UserMovies(
     val rating: Double,
     val isWatched: Boolean,
-    val isInMy: Boolean
+    val isInMy: Boolean,
+    val durProgress: Long
 )

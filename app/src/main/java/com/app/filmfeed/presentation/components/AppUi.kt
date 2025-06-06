@@ -30,7 +30,7 @@ fun MovieCard(
 ){
     val context = LocalContext.current
     val request = ImageRequest.Builder(context)
-        .data(movie.poster)
+        .data(movie.posterURL)
         .diskCachePolicy(CachePolicy.ENABLED)
         .memoryCachePolicy(CachePolicy.ENABLED)
         .build()
