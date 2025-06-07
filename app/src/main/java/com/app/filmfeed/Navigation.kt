@@ -44,7 +44,7 @@ fun Navigation(
             arguments = listOf(navArgument("id"){type = NavType.LongType})
         ){ backStackEntry ->
             val id = backStackEntry.arguments?.getLong("id") ?: 2
-            AboutScreen(id,navController)
+            AboutScreen(id,navController,movieViewModel)
         }
         composable(
             route = Route.WatchMovie.route,

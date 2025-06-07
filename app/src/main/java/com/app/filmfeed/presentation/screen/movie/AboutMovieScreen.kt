@@ -23,25 +23,31 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.MediaItem
 import androidx.navigation.NavController
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
+import com.app.filmfeed.R
 import com.app.filmfeed.Route
 import com.app.filmfeed.getMovs
+import com.app.filmfeed.presentation.MovieViewModel
 
 @Composable
 fun AboutScreen(
     id: Long,
-    navController: NavController
+    navController: NavController,
+    viewModel: MovieViewModel
 ){
     val movie = getMovs()[id.toInt()]
     val context = LocalContext.current
@@ -50,6 +56,9 @@ fun AboutScreen(
         .diskCachePolicy(CachePolicy.ENABLED)
         .memoryCachePolicy(CachePolicy.ENABLED)
         .build()
+
+    LaunchedEffect(Unit) { viewModel.mediaItem = MediaItem.fromUri(movie.movieURL) }
+
     Box {
         LazyColumn(
             Modifier.fillMaxSize(),
@@ -61,7 +70,7 @@ fun AboutScreen(
                     model = request,
                     contentDescription = movie.name,
                     modifier = Modifier.fillMaxWidth(),
-                    contentScale = ContentScale.Fit,
+                    contentScale = ContentScale.Crop,
                     success = { SubcomposeAsyncImageContent() },
                     loading = {
                         Box(
@@ -143,14 +152,14 @@ fun AboutScreen(
             contentAlignment = Alignment.BottomCenter
         ){
             Button(
-                onClick = {navController.navigate(Route.WatchMovie.createRoute(id))},
+                onClick = { navController.navigate(Route.WatchMovie.createRoute(id)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .offset(y = (-20).dp)
             ) {
                 Text(
-                    "Watch"
+                    stringResource(R.string.watch)
                 )
             }
         }

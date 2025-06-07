@@ -53,7 +53,8 @@ data class MovieMember(
 data class User(
     val id: Long,
     val name: String,
-    val watchedMovies: Map<MovieItem, UserMovies>
+    val watchedMovies: Map<MovieItem, UserMovies>,
+    val downloadMovies: Map<MovieItem, UserMovies>
 )
 
 data class UserMovies(

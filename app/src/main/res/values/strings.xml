@@ -6,4 +6,5 @@
         <item>My</item>
         <item>Search</item>
     </string-array>
+    <string name="watch">Watch</string>
 </resources>

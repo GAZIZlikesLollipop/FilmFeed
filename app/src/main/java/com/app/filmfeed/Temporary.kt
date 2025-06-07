@@ -76,7 +76,7 @@ fun getMovs(): List<MovieItem> {
             id = 1,
             name = "Interstellar",
             posterURL = "https://i.ebayimg.com/00/s/MTYwMFgxMDY2/z/zu4AAOSw2spbJQ0J/\$_57.JPG?set_id=8800005007.jpg",
-            movieURL = "https://archive.org/download/interstellar-2014_202409/Interstellar%282014%29.mp4",
+            movieURL = "https://dn721908.ca.archive.org/0/items/interstellar-2014_202409/Interstellar%282014%29.mp4",
             categories = listOf(
                 MovieCategories.Drama,
                 MovieCategories.Fantasy,
@@ -95,7 +95,7 @@ fun getMovs(): List<MovieItem> {
             id = 2,
             name = "Titanic",
             posterURL = "https://m.media-amazon.com/images/I/610CYrdV7AS.jpg",
-            movieURL = "https://ia801802.us.archive.org/35/items/titanic-1996-full-movie-1080p-6-ynd-9gu-9-zvk/Titanic%201996%20Full%20movie%201080p-6YNd9gu9ZVk.mp4",
+            movieURL = "https://ia601802.us.archive.org/35/items/titanic-1996-full-movie-1080p-6-ynd-9gu-9-zvk/Titanic%201996%20Full%20movie%201080p-6YNd9gu9ZVk.mp4",
             categories = listOf(
                 MovieCategories.Drama,
                 MovieCategories.Thriller,
