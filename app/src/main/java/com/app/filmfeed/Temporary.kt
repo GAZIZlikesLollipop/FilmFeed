@@ -11,14 +11,14 @@ fun getMovs(): List<MovieItem> {
             name = "Bred Pitt",
             featuredFilms = listOf(),
             photo = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F4%2F4c%2FBrad_Pitt_2019_by_Glenn_Francis.jpg%2F1200px-Brad_Pitt_2019_by_Glenn_Francis.jpg&f=1&nofb=1&ipt=2ff5d7bd43cb445808d9aeb11f93dab5cd1f45058c99e9044dec070e36eb25bb.jpg",
-            role = "Actor",
+            role = "Tyler Durden",
             date = "18.12.1963"
         ),
         MovieMember(
             id = 1,
             name = "Devid Fincher",
             featuredFilms = listOf(),
-            photo = "https://duckduckgo.com/i/71c09ef91ea99271.jpg",
+            photo = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.britannica.com%2F20%2F222620-050-FF919598%2FMovie-director-David-Fincher-2018.jpg&f=1&nofb=1&ipt=dbd282a9daa965e672482fbb61462caddb5a19e9a082b8260da55d869d32d050",
             role = "Director",
             date = "28.08.1962"
         ),
@@ -27,7 +27,7 @@ fun getMovs(): List<MovieItem> {
             name = "Matthew McConaughey",
             featuredFilms = listOf(),
             photo = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Matthew_McConaughey_2019_%2848648344772%29.jpg/500px-Matthew_McConaughey_2019_%2848648344772%29.jpg",
-            role = "Actor",
+            role = "Cooper",
             date = "04.11.1969"
         ),
         MovieMember(
@@ -43,7 +43,7 @@ fun getMovs(): List<MovieItem> {
             name = "Leonardo DiCaprio",
             featuredFilms = listOf(),
             photo = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Leonardo_Dicaprio_Cannes_2019.jpg/500px-Leonardo_Dicaprio_Cannes_2019.jpg",
-            role = "Actor",
+            role = "Jack Dawson",
             date = "11.11.1974"
         ),
         MovieMember(

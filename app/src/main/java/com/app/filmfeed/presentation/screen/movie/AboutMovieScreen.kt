@@ -1,6 +1,5 @@
 package com.app.filmfeed.presentation.screen.movie
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,20 +26,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.navigation.NavController
-import coil3.compose.SubcomposeAsyncImage
-import coil3.compose.SubcomposeAsyncImageContent
-import coil3.request.CachePolicy
-import coil3.request.ImageRequest
 import com.app.filmfeed.R
 import com.app.filmfeed.Route
 import com.app.filmfeed.getMovs
 import com.app.filmfeed.presentation.MovieViewModel
+import com.app.filmfeed.presentation.components.MemberSurface
+import com.app.filmfeed.presentation.components.WebImage
 
 @Composable
 fun AboutScreen(
@@ -50,12 +45,7 @@ fun AboutScreen(
     viewModel: MovieViewModel
 ){
     val movie = getMovs()[id.toInt()]
-    val context = LocalContext.current
-    val request = ImageRequest.Builder(context)
-        .data(movie.posterURL)
-        .diskCachePolicy(CachePolicy.ENABLED)
-        .memoryCachePolicy(CachePolicy.ENABLED)
-        .build()
+    val cnt = stringArrayResource(R.array.about_movie)
 
     LaunchedEffect(Unit) { viewModel.mediaItem = MediaItem.fromUri(movie.movieURL) }
 
@@ -66,36 +56,11 @@ fun AboutScreen(
             horizontalAlignment = Alignment.Start
         ) {
             item {
-                SubcomposeAsyncImage(
-                    model = request,
-                    contentDescription = movie.name,
-                    modifier = Modifier.fillMaxWidth(),
-                    contentScale = ContentScale.Crop,
-                    success = { SubcomposeAsyncImageContent() },
-                    loading = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.surfaceContainer),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    },
-                    error = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.surfaceContainer),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = movie.name.filter { it.isLetter() && it.isUpperCase() },
-                                color = MaterialTheme.colorScheme.onBackground.copy(0.40f),
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                        }
-                    }
+                WebImage(
+                    url = movie.posterURL,
+                    text = movie.name,
+                    cntScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
             item {
@@ -144,6 +109,21 @@ fun AboutScreen(
                 )
             }
             item{
+                HorizontalDivider()
+            }
+            item {
+                MemberSurface(
+                    members = movie.members,
+                    isActor = true
+                )
+            }
+            item {
+                MemberSurface(
+                    members = movie.members,
+                    isActor = false
+                )
+            }
+            item {
                 Spacer(Modifier.height(50.dp))
             }
         }
@@ -159,7 +139,7 @@ fun AboutScreen(
                     .offset(y = (-20).dp)
             ) {
                 Text(
-                    stringResource(R.string.watch)
+                    cnt[0]
                 )
             }
         }

@@ -6,5 +6,10 @@
         <item>My</item>
         <item>Search</item>
     </string-array>
-    <string name="watch">Watch</string>
+    <string-array name="about_movie">
+        <item>Watch</item>
+        <item>Actors</item>
+        <item>Film crew</item>
+        <item>More</item>
+    </string-array>
 </resources>
