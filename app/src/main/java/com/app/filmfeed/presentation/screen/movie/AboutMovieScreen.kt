@@ -35,7 +35,7 @@ import com.app.filmfeed.R
 import com.app.filmfeed.Route
 import com.app.filmfeed.getMovs
 import com.app.filmfeed.presentation.MovieViewModel
-import com.app.filmfeed.presentation.components.MemberSurface
+import com.app.filmfeed.presentation.components.MemberCard
 import com.app.filmfeed.presentation.components.WebImage
 
 @Composable
@@ -112,15 +112,21 @@ fun AboutScreen(
                 HorizontalDivider()
             }
             item {
-                MemberSurface(
+                MemberCard(
                     members = movie.members,
-                    isActor = true
+                    isActor = true,
+                    navController = navController,
+                    movieId = id,
+                    viewModel = viewModel
                 )
             }
             item {
-                MemberSurface(
+                MemberCard(
                     members = movie.members,
-                    isActor = false
+                    isActor = false,
+                    navController = navController,
+                    movieId = id,
+                    viewModel = viewModel
                 )
             }
             item {
@@ -139,7 +145,8 @@ fun AboutScreen(
                     .offset(y = (-20).dp)
             ) {
                 Text(
-                    cnt[0]
+                    cnt[0],
+                    style = MaterialTheme.typography.titleLarge
                 )
             }
         }

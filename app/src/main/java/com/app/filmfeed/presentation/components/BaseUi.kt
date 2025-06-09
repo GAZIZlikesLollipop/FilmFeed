@@ -48,7 +48,7 @@ fun BaseScreen(movieViewModel: MovieViewModel){
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     Scaffold(
         topBar = {
-            BaseTopBar(navController)
+            if(currentRoute != Route.WatchMovie.route) BaseTopBar(navController,movieViewModel)
         },
         bottomBar = {
             if(
@@ -71,15 +71,18 @@ fun BaseScreen(movieViewModel: MovieViewModel){
 
 @Composable
 fun BaseTopBar(
-    navController: NavController
+    navController: NavController,
+    viewModel: MovieViewModel
 ){
     val ams = stringArrayResource(R.array.base_routes)
+    val membs = stringArrayResource(R.array.about_movie)
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     val name = when(currentRoute){
         Route.Main.route -> ams[0]
         Route.Catalog.route -> ams[1]
         Route.My.route -> ams[2]
         Route.Search.route -> ams[3]
+        Route.Members.route -> if(viewModel.isActor) membs[1] else membs[2]
         else -> ""
     }
     val barColor by animateColorAsState(
@@ -95,15 +98,20 @@ fun BaseTopBar(
         title = {
             Text(
                 text = name,
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
         },
         navigationIcon = {
-            if(currentRoute == Route.AboutMovie.route) {
+            if(
+                currentRoute != Route.Main.route &&
+                currentRoute != Route.Catalog.route &&
+                currentRoute != Route.My.route &&
+                currentRoute != Route.Search.route
+            ) {
                 IconButton(
-                    onClick = { navController.navigate(Route.Main.route) }
+                    onClick = { navController.popBackStack() }
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowBack,

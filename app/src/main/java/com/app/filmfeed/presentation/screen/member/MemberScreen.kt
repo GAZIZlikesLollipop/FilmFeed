@@ -1,7 +1,7 @@
 package com.app.filmfeed.presentation.screen.member
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
@@ -9,5 +9,10 @@ import androidx.compose.ui.Modifier
 fun MemberScreen(
     id: Long
 ){
-    Column(Modifier.fillMaxSize()){  }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+
+    ) {
+
+    }
 }

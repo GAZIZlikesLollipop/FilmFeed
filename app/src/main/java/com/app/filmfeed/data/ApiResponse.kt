@@ -30,6 +30,7 @@ data class MovieItem(
     val name: String,
     val posterURL: String,
     val movieURL: String,
+    val trailer: String? = null,
     val duration: Int,
     val age: Int,
     val categories: List<MovieCategories>,
@@ -39,6 +40,7 @@ data class MovieItem(
     val country: String,
     val year: Int,
     val members: List<MovieMember>,
+    val tags: List<String> = emptyList()
 )
 
 data class MovieMember(
@@ -46,13 +48,15 @@ data class MovieMember(
     val name: String,
     val featuredFilms: List<MovieItem>,
     val photo: String,
-    val role: String,
-    val date: String
+    val roles: List<String>,
+    val character: String? = null,
+    val birthDate: String
 )
 
 data class User(
     val id: Long,
     val name: String,
+    val avatarURL: String,
     val watchedMovies: Map<MovieItem, UserMovies>,
     val downloadMovies: Map<MovieItem, UserMovies>
 )
@@ -61,5 +65,6 @@ data class UserMovies(
     val rating: Double,
     val isWatched: Boolean,
     val isInMy: Boolean,
-    val durProgress: Long
+    val durProgress: Long,
+    val watchedDate: String
 )

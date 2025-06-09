@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,13 +25,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.app.filmfeed.R
+import com.app.filmfeed.Route
 import com.app.filmfeed.data.MovieItem
 import com.app.filmfeed.data.MovieMember
+import com.app.filmfeed.presentation.MovieViewModel
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun MovieCard(
@@ -102,9 +110,12 @@ fun WebImage(
 }
 
 @Composable
-fun MemberSurface(
+fun MemberCard(
     members: List<MovieMember>,
-    isActor: Boolean
+    isActor: Boolean,
+    navController: NavController,
+    movieId: Long,
+    viewModel: MovieViewModel
 ){
     val cnt = stringArrayResource(R.array.about_movie)
     Column(
@@ -112,7 +123,12 @@ fun MemberSurface(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ){
         Row(
-            modifier = Modifier.fillMaxWidth().clickable{},
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    viewModel.isActor = isActor
+                    navController.navigate(Route.Members.createRoute(movieId))
+                },
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
@@ -129,31 +145,77 @@ fun MemberSurface(
         }
         LazyRow {
             items(members) {
-                if (if (isActor) !it.role.contains("Director") else it.role.contains("Director")) {
+                if (if (isActor) it.roles[0].contains("Actor") else !it.roles[0].contains("Actor")) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier.clickable{}
+                        modifier = Modifier
+                            .clickable { navController.navigate(Route.Member.createRoute(it.id)) }
+                            .width(125.dp)
                     ) {
                         WebImage(
                             url = it.photo,
                             text = it.name,
                             cntScale = ContentScale.FillBounds,
-                            modifier = Modifier.height(150.dp).width(100.dp)
+                            modifier = Modifier.height(175.dp).width(125.dp)
                         )
                         Text(
                             it.name,
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.onBackground
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onBackground,
                         )
                         Text(
-                            it.role,
-                            style = MaterialTheme.typography.titleSmall,
+                            it.character ?: it.roles[0],
+                            style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onBackground.copy(0.5f)
                         )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun DetailMemberCard(
+    member: MovieMember,
+    navController: NavController
+){
+    val memberAge = Period.between(LocalDate.parse(member.birthDate, DateTimeFormatter.ofPattern("dd.MM.yyyy")),LocalDate.now()).years
+    Column(
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+        modifier = Modifier.clickable{ navController.navigate(Route.Member.createRoute(member.id)) }
+    ){
+        Row(
+            modifier = Modifier.fillMaxSize().height(175.dp).padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            WebImage(
+                url = member.photo,
+                text = member.name,
+                cntScale = ContentScale.FillBounds,
+                modifier = Modifier.width(115.dp)
+            )
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                Text(
+                    text = member.name,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    text = "${member.birthDate} • $memberAge",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onBackground.copy(0.5f)
+                )
+                Text(
+                    text = member.character ?: member.roles.joinToString(),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onBackground.copy(0.5f)
+                )
+            }
+        }
+        HorizontalDivider(thickness = 2.dp)
     }
 }

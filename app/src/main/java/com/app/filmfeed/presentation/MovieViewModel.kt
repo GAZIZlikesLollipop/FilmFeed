@@ -11,4 +11,5 @@ class MovieViewModel(): ViewModel() {
     var position by mutableLongStateOf(0L)
     var isPlaying by mutableStateOf(true)
     var mediaItem by mutableStateOf<MediaItem?>(null)
+    var isActor by mutableStateOf(true)
 }

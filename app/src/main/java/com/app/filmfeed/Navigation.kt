@@ -62,7 +62,7 @@ fun Navigation(
             route = Route.Members.route,
             arguments = listOf(navArgument("id"){type = NavType.LongType})
         ){
-            MembersScreen(it.arguments?.getLong("id") ?: 0)
+            MembersScreen(it.arguments?.getLong("id") ?: 0,padding,navController,movieViewModel)
         }
 
     }

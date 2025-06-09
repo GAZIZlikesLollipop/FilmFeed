@@ -11,48 +11,51 @@ fun getMovs(): List<MovieItem> {
             name = "Bred Pitt",
             featuredFilms = listOf(),
             photo = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F4%2F4c%2FBrad_Pitt_2019_by_Glenn_Francis.jpg%2F1200px-Brad_Pitt_2019_by_Glenn_Francis.jpg&f=1&nofb=1&ipt=2ff5d7bd43cb445808d9aeb11f93dab5cd1f45058c99e9044dec070e36eb25bb.jpg",
-            role = "Tyler Durden",
-            date = "18.12.1963"
+            roles = listOf("Actor"),
+            character = "Tyler Durden",
+            birthDate = "18.12.1963"
         ),
         MovieMember(
             id = 1,
             name = "Devid Fincher",
             featuredFilms = listOf(),
             photo = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.britannica.com%2F20%2F222620-050-FF919598%2FMovie-director-David-Fincher-2018.jpg&f=1&nofb=1&ipt=dbd282a9daa965e672482fbb61462caddb5a19e9a082b8260da55d869d32d050",
-            role = "Director",
-            date = "28.08.1962"
+            roles = listOf("Director"),
+            birthDate = "28.08.1962"
         ),
         MovieMember(
             id = 2,
             name = "Matthew McConaughey",
             featuredFilms = listOf(),
             photo = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Matthew_McConaughey_2019_%2848648344772%29.jpg/500px-Matthew_McConaughey_2019_%2848648344772%29.jpg",
-            role = "Cooper",
-            date = "04.11.1969"
+            roles = listOf("Actor"),
+            character = "Cooper",
+            birthDate = "04.11.1969"
         ),
         MovieMember(
             id = 3,
             name = "Christopher Nolan",
             featuredFilms = listOf(),
             photo = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/ChrisNolanBFI150224_%2810_of_12%29_%2853532289710%29_%28cropped2%29.jpg/500px-ChrisNolanBFI150224_%2810_of_12%29_%2853532289710%29_%28cropped2%29.jpg",
-            role = "Director",
-            date = "30.07.1970"
+            roles = listOf("Director"),
+            birthDate = "30.07.1970"
         ),
         MovieMember(
             id = 4,
             name = "Leonardo DiCaprio",
             featuredFilms = listOf(),
             photo = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Leonardo_Dicaprio_Cannes_2019.jpg/500px-Leonardo_Dicaprio_Cannes_2019.jpg",
-            role = "Jack Dawson",
-            date = "11.11.1974"
+            roles = listOf("Actor"),
+            character = "Jack Dawson",
+            birthDate = "11.11.1974"
         ),
         MovieMember(
             id = 5,
             name = "James Cameron",
             featuredFilms = listOf(),
             photo = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Avatar_The_Way_of_Water_Tokyo_Press_Conference_James_Cameron_%2852563430565%29_%28cropped%29.jpg/500px-Avatar_The_Way_of_Water_Tokyo_Press_Conference_James_Cameron_%2852563430565%29_%28cropped%29.jpg",
-            role = "Director",
-            date = "16.08.1954"
+            roles = listOf("Director"),
+            birthDate = "16.08.1954"
         ),
     )
 
