@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,7 +17,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import com.app.filmfeed.getMovs
 import com.app.filmfeed.presentation.MovieViewModel
 
 @Composable
@@ -24,7 +25,8 @@ fun WatchMovieScreen(
     viewModel: MovieViewModel
 ){
     val context = LocalContext.current
-    val movie = getMovs()[id.toInt()]
+    val movies by viewModel.movies.collectAsState()
+    val movie = movies.find { it.id == id }!!
     val md = viewModel.mediaItem
 
     val exoPlayer = remember(context) {

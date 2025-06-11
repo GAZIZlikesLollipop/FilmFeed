@@ -11,5 +11,9 @@
         <item>Actors</item>
         <item>Film crew</item>
         <item>More</item>
+        <item>Budget</item>
+        <item>Box office</item>
+        <item>Film finances</item>
+        <item>from the budget</item>
     </string-array>
 </resources>

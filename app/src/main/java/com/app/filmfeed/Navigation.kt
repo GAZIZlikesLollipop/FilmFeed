@@ -56,7 +56,7 @@ fun Navigation(
             route = Route.Member.route,
             arguments = listOf(navArgument("id"){type = NavType.LongType})
         ){
-            MemberScreen(it.arguments?.getLong("id") ?: 0)
+            MemberScreen(it.arguments?.getLong("id") ?: 0,padding,movieViewModel)
         }
         composable(
             route = Route.Members.route,

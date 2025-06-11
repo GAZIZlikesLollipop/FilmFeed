@@ -1,64 +1,66 @@
 package com.app.filmfeed.data
 
-enum class MovieCategories {
-    Action, // Драма
-    Mystery, // Мистика
-    Romance, // Романтика
-    Sport, // Спорт
-    Biographical, // Биографический
-    Family, // Семейный
-    War, // Война
-    Western, // Октябрьская
-    Biography, // Биография
-    Animation, // Анимация
-    Musical, // Музыкальный
-    Documentary, // Документальный
-    History, // Исторический
-    Fantasy, // Фэнтези
-    Horror, // Ужасы
-    ScienceFiction, // Научная фантастика
-    Comedy, // Комедия
-    Crime, // Преступление
-    Thriller, // Триллер
-    Drama, // Драма
-    Adventure,
-    MeloDrama
-}
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-data class MovieItem(
+@Serializable
+data class Genre(
+    val id: Long,
+    val name: String
+)
+
+@Serializable
+data class Movie(
     val id: Long,
     val name: String,
     val posterURL: String,
     val movieURL: String,
-    val trailer: String? = null,
+    val trailerURL: String? = null,
     val duration: Int,
     val age: Int,
-    val categories: List<MovieCategories>,
+    @SerialName("categories") val genres: List<Genre>,
     val rating: Double,
     val reviews: Long,
     val description: String,
     val country: String,
     val year: Int,
-    val members: List<MovieMember>,
-    val tags: List<String> = emptyList()
+    val budget: Long,
+    val boxOffice: Long,
+    val movieMembers: List<MovieMember>,
+//    val createdAt: OffsetTime,
+//    val updatedAt: OffsetTime
 )
 
+@Serializable
 data class MovieMember(
+    val movieId: Long,
+    val memberId: Long,
+    val character: String?,
+    val roles: List<String>,
+    val member: Member
+)
+
+@Serializable
+data class Member(
     val id: Long,
     val name: String,
-    val featuredFilms: List<MovieItem>,
     val photo: String,
     val roles: List<String>,
-    val character: String? = null,
-    val birthDate: String
+    val birthDate: String,
+    val deathDate: String? = null,
+    val biography: String,
+    val nationality: String,
+    val featuredFilms: List<Movie> = emptyList(),
+//    val createdAt: OffsetTime,
+//    val updatedAt: OffsetTime
 )
 
 data class User(
     val id: Long,
     val name: String,
     val avatarURL: String,
-    val watchedMovies: Map<MovieItem, UserMovies>,
-    val downloadMovies: Map<MovieItem, UserMovies>
+    val watchedMovies: Map<Movie, UserMovies>,
+    val downloadMovies: Map<Movie, UserMovies>
 )
 
 data class UserMovies(

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 android {
@@ -67,4 +68,13 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer.dash)
     implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.media3.ui.compose)
+    //Ktor
+    implementation(libs.ktor.client.core) // Используйте последнюю стабильную версию Ktor
+    implementation(libs.ktor.client.android) // Движок для Android
+    implementation(libs.ktor.client.content.negotiation) // Для работы с JSON
+    implementation(libs.ktor.serialization.kotlinx.json) // Для сериализации/десериализации JSON с kotlinx.serialization
+    implementation(libs.ktor.client.logging) // <-- Убедитесь, что эта строка есть!
+    implementation(libs.ktor.client.okhttp) // <-- ДОБАВЬТЕ ЭТУ СТРОКУ для плагинов!
+    // Kotlinx Serialization (если еще нет)
+    implementation(libs.kotlinx.serialization.json)
 }

@@ -24,7 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
@@ -32,16 +34,16 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.app.filmfeed.R
 import com.app.filmfeed.Route
-import com.app.filmfeed.data.MovieItem
+import com.app.filmfeed.data.Movie
 import com.app.filmfeed.data.MovieMember
 import com.app.filmfeed.presentation.MovieViewModel
 import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.time.Period
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun MovieCard(
-    movie: MovieItem,
+    movie: Movie,
     onClick: () -> Unit
 ){
     Column(
@@ -150,17 +152,17 @@ fun MemberCard(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(6.dp),
                         modifier = Modifier
-                            .clickable { navController.navigate(Route.Member.createRoute(it.id)) }
+                            .clickable { navController.navigate(Route.Member.createRoute(it.member.id)) }
                             .width(125.dp)
                     ) {
                         WebImage(
-                            url = it.photo,
-                            text = it.name,
+                            url = it.member.photo,
+                            text = it.member.name,
                             cntScale = ContentScale.FillBounds,
                             modifier = Modifier.height(175.dp).width(125.dp)
                         )
                         Text(
-                            it.name,
+                            it.member.name,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onBackground,
                         )
@@ -181,38 +183,40 @@ fun DetailMemberCard(
     member: MovieMember,
     navController: NavController
 ){
-    val memberAge = Period.between(LocalDate.parse(member.birthDate, DateTimeFormatter.ofPattern("dd.MM.yyyy")),LocalDate.now()).years
+    val memberAge = Period.between(OffsetDateTime.parse(member.member.birthDate).toLocalDate(),LocalDate.now()).years
     Column(
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = Modifier.clickable{ navController.navigate(Route.Member.createRoute(member.id)) }
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        modifier = Modifier.clickable { navController.navigate(Route.Member.createRoute(member.member.id)) }
     ){
         Row(
-            modifier = Modifier.fillMaxSize().height(175.dp).padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxSize().height(135.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             WebImage(
-                url = member.photo,
-                text = member.name,
+                url = member.member.photo,
+                text = member.member.name,
                 cntScale = ContentScale.FillBounds,
-                modifier = Modifier.width(115.dp)
+                modifier = Modifier.width(100.dp)
             )
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxHeight()
             ) {
                 Text(
-                    text = member.name,
-                    style = MaterialTheme.typography.titleLarge
+                    text = member.member.name,
+                    fontWeight = FontWeight.W400,
+                    fontSize = 24.sp
                 )
                 Text(
-                    text = "${member.birthDate} • $memberAge",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(0.5f)
+                    text = "${OffsetDateTime.parse(member.member.birthDate).toLocalDate()} • $memberAge y",
+                    color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
+                    fontSize = 20.sp
                 )
                 Text(
                     text = member.character ?: member.roles.joinToString(),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onBackground.copy(0.5f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 20.sp
                 )
             }
         }
