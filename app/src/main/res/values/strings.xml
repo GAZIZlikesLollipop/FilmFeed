@@ -16,4 +16,8 @@
         <item>Film finances</item>
         <item>from the budget</item>
     </string-array>
+    <string-array name="member_cnt">
+        <item>Filmography</item>
+        <item>Biography</item>
+    </string-array>
 </resources>

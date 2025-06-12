@@ -1,6 +1,5 @@
 package com.app.filmfeed.data
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,7 +17,7 @@ data class Movie(
     val trailerURL: String? = null,
     val duration: Int,
     val age: Int,
-    @SerialName("categories") val genres: List<Genre>,
+    val genres: List<Genre>,
     val rating: Double,
     val reviews: Long,
     val description: String,
