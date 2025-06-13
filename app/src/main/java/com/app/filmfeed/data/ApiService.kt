@@ -42,10 +42,4 @@ class ApiService(private val httpClient: HttpClient){
     suspend fun getMovies(): List<Movie> {
         return httpClient.get("$BASE_URL/movies").body()
     }
-    suspend fun getMovie(id: Int): Movie {
-        return httpClient.get("$BASE_URL/movies/$id").body()
-    }
-    suspend fun getMember(id: Long): Member {
-        return httpClient.get("$BASE_URL/members/$id").body()
-    }
 }

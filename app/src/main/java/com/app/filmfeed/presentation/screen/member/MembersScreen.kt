@@ -30,7 +30,11 @@ fun MembersScreen(
     ){
         items(movie.movieMembers){
             if(if(viewModel.isActor) it.character != null else it.character == null) {
-                DetailMemberCard(it, navController = navController)
+                DetailMemberCard(
+                    member = it,
+                    navController = navController,
+                    movieId = movie.id,
+                )
             }
         }
     }

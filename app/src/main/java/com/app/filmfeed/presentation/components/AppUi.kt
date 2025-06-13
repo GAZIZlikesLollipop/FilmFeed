@@ -152,7 +152,7 @@ fun MemberCard(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(6.dp),
                         modifier = Modifier
-                            .clickable { navController.navigate(Route.Member.createRoute(it.member.id)) }
+                            .clickable { navController.navigate(Route.Member.createRoute(movieId,it.member.id)) }
                             .width(125.dp)
                     ) {
                         WebImage(
@@ -181,12 +181,13 @@ fun MemberCard(
 @Composable
 fun DetailMemberCard(
     member: MovieMember,
-    navController: NavController
+    navController: NavController,
+    movieId: Long,
 ){
     val memberAge = Period.between(OffsetDateTime.parse(member.member.birthDate).toLocalDate(),LocalDate.now()).years
     Column(
         verticalArrangement = Arrangement.spacedBy(20.dp),
-        modifier = Modifier.clickable { navController.navigate(Route.Member.createRoute(member.member.id)) }
+        modifier = Modifier.clickable { navController.navigate(Route.Member.createRoute(movieId,member.member.id)) }
     ){
         Row(
             modifier = Modifier.fillMaxSize().height(135.dp),

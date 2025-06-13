@@ -54,10 +54,14 @@ fun Navigation(
         }
         composable(
             route = Route.Member.route,
-            arguments = listOf(navArgument("id"){type = NavType.LongType})
+            arguments = listOf(
+                navArgument("memberId"){type = NavType.LongType},
+                navArgument("movieId"){type = NavType.LongType}
+            )
         ){
             MemberScreen(
-                id = it.arguments?.getLong("id") ?: 0,
+                movieId = it.arguments?.getLong("movieId") ?: 0,
+                memberId = it.arguments?.getLong("memberId") ?: 0,
                 paddingValues = padding,
                 viewModel = movieViewModel,
                 navController = navController
@@ -81,11 +85,11 @@ sealed class Route(val route: String){
     object WatchMovie: Route("watchMovie/{id}"){
         fun createRoute(id: Long) = "watchMovie/${id}"
     }
-    object Member: Route("member/{id}"){
+    object Members: Route("member/{id}"){
         fun createRoute(id: Long) = "member/${id}"
     }
-    object Members: Route("members/{id}"){
-        fun createRoute(id: Long) = "members/${id}"
+    object Member: Route("members/{movieId}/{memberId}"){
+        fun createRoute(movieId: Long,memberId: Long) = "members/$movieId/$memberId"
     }
     object AboutMovie: Route("aboutMovie/{id}"){
         fun createRoute(id: Long) = "aboutMovie/$id"

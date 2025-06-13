@@ -17,7 +17,7 @@ data class Movie(
     val trailerURL: String? = null,
     val duration: Int,
     val age: Int,
-    val genres: List<Genre>,
+    val genres: List<Genre> = emptyList(),
     val rating: Double,
     val reviews: Long,
     val description: String,
@@ -25,9 +25,9 @@ data class Movie(
     val year: Int,
     val budget: Long,
     val boxOffice: Long,
-    val movieMembers: List<MovieMember>,
-//    val createdAt: OffsetTime,
-//    val updatedAt: OffsetTime
+    val movieMembers: List<MovieMember> = emptyList(),
+    val createdAt: String = "",
+    val updatedAt: String = ""
 )
 
 @Serializable
@@ -49,9 +49,9 @@ data class Member(
     val deathDate: String? = null,
     val biography: String,
     val nationality: String,
-    val featuredFilms: List<Movie> = emptyList(),
-//    val createdAt: OffsetTime,
-//    val updatedAt: OffsetTime
+    val featuredFilms: List<Movie>,
+    val createdAt: String = "",
+    val updatedAt: String = ""
 )
 
 data class User(

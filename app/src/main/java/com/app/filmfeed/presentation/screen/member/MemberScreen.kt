@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,7 +18,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -37,36 +37,29 @@ import java.time.Period
 
 @Composable
 fun MemberScreen(
-    id: Long,
+    movieId: Long,
+    memberId: Long,
     paddingValues: PaddingValues,
     viewModel: MovieViewModel,
     navController: NavController
 ){
     val cnt = stringArrayResource(R.array.member_cnt)
-    val member by viewModel.member.collectAsState()
-
-    LaunchedEffect(Unit) {
-        if(member == null){
-            viewModel.getMember(id)
-        }
-    }
+    val movies by viewModel.movies.collectAsState()
+    val member = movies.find { it.id == movieId }!!.movieMembers.find { it.member.id == memberId }?.member
 
     if(member != null) {
-        val memberAge = if(member?.birthDate != "") {
-            if (member?.deathDate == null || member?.deathDate == "") {
+        val memberAge =
+            if (member.deathDate == null || member.deathDate == "") {
                 Period.between(
-                    OffsetDateTime.parse(member?.birthDate ?: "").toLocalDate(),
+                    OffsetDateTime.parse(member.birthDate).toLocalDate(),
                     LocalDate.now()
                 ).years
             } else {
                 Period.between(
-                    OffsetDateTime.parse(member?.birthDate ?: "").toLocalDate(),
-                    OffsetDateTime.parse(member?.deathDate).toLocalDate()
+                    OffsetDateTime.parse(member.birthDate).toLocalDate(),
+                    OffsetDateTime.parse(member.deathDate).toLocalDate()
                 ).years
             }
-        }else{
-            LocalDate.now().year
-        }
 
         LazyColumn(
             modifier = Modifier
@@ -77,35 +70,36 @@ fun MemberScreen(
         ) {
             item {
                 Row(
-                    modifier = Modifier.fillMaxWidth().height(150.dp),
+                    modifier = Modifier.fillMaxWidth().height(180.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     WebImage(
-                        url = member?.photo ?: "",
-                        text = member?.name ?: "",
+                        url = member.photo,
+                        text = member.name,
                         cntScale = ContentScale.Crop,
-                        modifier = Modifier.width(100.dp)
+                        modifier = Modifier.width(130.dp)
                     )
                     Column(
-                        verticalArrangement = Arrangement.SpaceAround
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxHeight()
                     ) {
                         Text(
-                            member?.name ?: "",
+                            member.name,
                             style = MaterialTheme.typography.titleLarge
                         )
                         Text(
-                            member?.roles?.joinToString() ?: "",
+                            member.roles.joinToString(),
                             color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
                             style = MaterialTheme.typography.titleMedium
                         )
                         Text(
-                            member?.birthDate ?: "",
+                            OffsetDateTime.parse(member.birthDate).toLocalDate().toString(),
                             color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
                             style = MaterialTheme.typography.titleMedium
                         )
-                        if (member?.deathDate != null) {
+                        if (member.deathDate != null) {
                             Text(
-                                member?.deathDate ?: "",
+                                OffsetDateTime.parse(member.deathDate).toLocalDate().toString(),
                                 color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
                                 style = MaterialTheme.typography.titleMedium
                             )
@@ -116,7 +110,7 @@ fun MemberScreen(
                             style = MaterialTheme.typography.titleMedium
                         )
                         Text(
-                            member?.nationality ?: "",
+                            member.nationality,
                             color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
                             style = MaterialTheme.typography.titleMedium
                         )
@@ -131,8 +125,8 @@ fun MemberScreen(
                 )
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    member?.biography ?: "",
-                    style = MaterialTheme.typography.titleLarge
+                    member.biography,
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
             item { HorizontalDivider() }
@@ -146,7 +140,7 @@ fun MemberScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    items(member?.featuredFilms ?: emptyList()) {
+                    items(member.featuredFilms) {
                         MovieCard(it) { navController.navigate(Route.AboutMovie.createRoute(it.id)) }
                     }
                 }
