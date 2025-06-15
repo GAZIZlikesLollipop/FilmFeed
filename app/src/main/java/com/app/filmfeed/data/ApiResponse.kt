@@ -34,7 +34,7 @@ data class Movie(
 data class MovieMember(
     val movieId: Long,
     val memberId: Long,
-    val character: String?,
+    val character: String? = null,
     val roles: List<String>,
     val member: Member
 )

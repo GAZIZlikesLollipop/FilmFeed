@@ -31,6 +31,11 @@ class MovieViewModel(private val movieRepository: MovieRepository): ViewModel() 
     private val _movies = MutableStateFlow(emptyList<Movie>())
     val movies = _movies.asStateFlow()
 
+    var currentMovieId by mutableLongStateOf(0)
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
     fun getMovies(){
         _apiState.value = ApiState.Loading
         viewModelScope.launch {

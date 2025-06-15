@@ -2,9 +2,21 @@
     <string name="app_name">FilmFeed</string>
     <string-array name="base_routes">
         <item>Main</item>
-        <item>Catalog</item>
         <item>My</item>
         <item>Search</item>
+    </string-array>
+    <string-array name="main_screen_categories">
+        <item>Continue Watching</item>
+        <item>For you</item>
+        <item>New Releases</item>
+        <item>You wanted to see</item>
+        <item>Trending</item>
+    </string-array>
+    <string-array name="main_cnt">
+        <item>All</item>
+    </string-array>
+    <string-array name="search_cnt">
+        <item>Search movie…</item>
     </string-array>
     <string-array name="about_movie">
         <item>Watch</item>
@@ -19,5 +31,9 @@
     <string-array name="member_cnt">
         <item>Filmography</item>
         <item>Biography</item>
+    </string-array>
+    <string-array name="error">
+        <item>Oops something went wrong, please try to update</item>
+        <item>Update</item>
     </string-array>
 </resources>

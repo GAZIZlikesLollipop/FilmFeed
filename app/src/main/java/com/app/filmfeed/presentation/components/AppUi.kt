@@ -55,11 +55,11 @@ fun MovieCard(
             url = movie.posterURL,
             text = movie.name,
             cntScale = ContentScale.Crop,
-            modifier = Modifier.height(250.dp).width(175.dp)
+            modifier = Modifier.height(225.dp).width(150.dp)
         )
         Text(
             text = movie.name,
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onBackground
         )
     }
@@ -112,7 +112,7 @@ fun WebImage(
 }
 
 @Composable
-fun MemberCard(
+fun MovieMembers(
     members: List<MovieMember>,
     isActor: Boolean,
     navController: NavController,
@@ -124,30 +124,16 @@ fun MemberCard(
         modifier = Modifier.padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ){
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    viewModel.isActor = isActor
-                    navController.navigate(Route.Members.createRoute(movieId))
-                },
-            horizontalArrangement = Arrangement.SpaceBetween
+        TwoColumnTextRow(
+            firstText = if(isActor) cnt[1] else cnt[2],
+            secondText = cnt[3]
         ) {
-            Text(
-                if(isActor) cnt[1] else cnt[2],
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(8.dp)
-            )
-            Text(
-                cnt[3],
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.padding(8.dp)
-            )
+            viewModel.isActor = isActor
+            navController.navigate(Route.Members.createRoute(movieId))
         }
-        LazyRow {
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)){
             items(members) {
-                if (if (isActor) it.roles[0].contains("Actor") else !it.roles[0].contains("Actor")) {
+                if (if (isActor) it.character != null else it.character == null) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -222,5 +208,30 @@ fun DetailMemberCard(
             }
         }
         HorizontalDivider(thickness = 2.dp)
+    }
+}
+
+@Composable
+fun TwoColumnTextRow(
+    firstText: String,
+    secondText: String,
+    onClick: () -> Unit
+){
+    Row(
+        modifier = Modifier.fillMaxWidth().clickable{onClick()},
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        Text(
+            firstText,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(vertical = 12.dp)
+        )
+        Text(
+            secondText,
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.secondary,
+            modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp)
+        )
     }
 }

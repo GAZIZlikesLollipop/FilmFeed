@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.app.filmfeed.presentation.MovieViewModel
-import com.app.filmfeed.presentation.screen.CatalogScreen
 import com.app.filmfeed.presentation.screen.MainScreen
 import com.app.filmfeed.presentation.screen.MyScreen
 import com.app.filmfeed.presentation.screen.SearchScreen
@@ -28,16 +27,16 @@ fun Navigation(
         startDestination = Route.Main.route
     ){
         composable(Route.Main.route){
-            MainScreen(movieViewModel,navController)
-        }
-        composable(Route.Catalog.route){
-            CatalogScreen()
+            MainScreen(movieViewModel,navController,padding)
         }
         composable(Route.My.route){
             MyScreen()
         }
         composable(Route.Search.route){
-            SearchScreen()
+            SearchScreen(
+                viewModel = movieViewModel,
+                paddingValues = padding
+            )
         }
         composable(
             route = Route.AboutMovie.route,
@@ -79,7 +78,6 @@ fun Navigation(
 
 sealed class Route(val route: String){
     object Main: Route("main")
-    object Catalog: Route("catalog")
     object My: Route("my")
     object Search: Route("search")
     object WatchMovie: Route("watchMovie/{id}"){

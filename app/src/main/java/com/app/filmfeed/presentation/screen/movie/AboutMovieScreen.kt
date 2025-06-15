@@ -44,7 +44,7 @@ import androidx.navigation.NavController
 import com.app.filmfeed.R
 import com.app.filmfeed.Route
 import com.app.filmfeed.presentation.MovieViewModel
-import com.app.filmfeed.presentation.components.MemberCard
+import com.app.filmfeed.presentation.components.MovieMembers
 import com.app.filmfeed.presentation.components.WebImage
 import com.app.filmfeed.utils.formatWithSpaces
 import kotlin.math.roundToInt
@@ -59,7 +59,10 @@ fun AboutScreen(
     val movie = movies.find { it.id == id }!!
     val cnt = stringArrayResource(R.array.about_movie)
 
-    LaunchedEffect(Unit) { viewModel.mediaItem = MediaItem.fromUri(movie.movieURL) }
+    LaunchedEffect(Unit) {
+        viewModel.currentMovieId = movie.id
+        viewModel.mediaItem = MediaItem.fromUri(movie.movieURL)
+    }
 
     Box {
         LazyColumn(
@@ -120,7 +123,7 @@ fun AboutScreen(
             }
             item { HorizontalDivider() }
             item {
-                MemberCard(
+                MovieMembers(
                     members = movie.movieMembers,
                     isActor = true,
                     navController = navController,
@@ -129,7 +132,7 @@ fun AboutScreen(
                 )
             }
             item {
-                MemberCard(
+                MovieMembers(
                     members = movie.movieMembers,
                     isActor = false,
                     navController = navController,
@@ -208,12 +211,14 @@ fun MovieFinancialsCard(
             // Прогресс-бар, показывающий отношение сборов к бюджету
             val ratio = (boxOffice.toFloat() / maxOf(budget, 1L)).coerceAtMost(1f)
             LinearProgressIndicator(
-                progress = ratio,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(3.dp)),
-                color = MaterialTheme.colorScheme.secondary
+            progress = { ratio },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(6.dp)
+                .clip(RoundedCornerShape(3.dp)),
+            color = MaterialTheme.colorScheme.secondary,
+//            trackColor = COMPILED_CODE,
+//            strokeCap = COMPILED_CODE,
             )
             Spacer(Modifier.height(8.dp))
             Text(

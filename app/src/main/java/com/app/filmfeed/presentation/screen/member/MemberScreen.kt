@@ -88,7 +88,7 @@ fun MemberScreen(
                             style = MaterialTheme.typography.titleLarge
                         )
                         Text(
-                            member.roles.joinToString(),
+                            "${member.roles.joinToString(limit = 3).substringBeforeLast(",")}...",
                             color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
                             style = MaterialTheme.typography.titleMedium
                         )
