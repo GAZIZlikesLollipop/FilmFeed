@@ -14,7 +14,7 @@ data class Movie(
     val name: String,
     val posterURL: String,
     val movieURL: String,
-    val trailerURL: String? = null,
+    val trailerURL: String,
     val duration: Int,
     val age: Int,
     val genres: List<Genre> = emptyList(),

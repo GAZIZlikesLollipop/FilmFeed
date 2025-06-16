@@ -20,18 +20,18 @@ import androidx.media3.ui.PlayerView
 import com.app.filmfeed.presentation.MovieViewModel
 
 @Composable
-fun WatchMovieScreen(
-    id: Long,
+fun WatchScreen(
+    movieId: Long,
+    isMovie: Boolean,
     viewModel: MovieViewModel
 ){
     val context = LocalContext.current
     val movies by viewModel.movies.collectAsState()
-    val movie = movies.find { it.id == id }!!
-    val md = viewModel.mediaItem
+    val movie = movies.find { it.id == movieId }!!
 
     val exoPlayer = remember(context) {
         ExoPlayer.Builder(context).build().apply {
-            if(md != null) setMediaItem(md) else setMediaItem(MediaItem.fromUri(movie.movieURL))
+            setMediaItem(if(isMovie) MediaItem.fromUri(movie.movieURL) else MediaItem.fromUri(movie.trailerURL))
             seekTo(viewModel.position)
             playWhenReady = viewModel.isPlaying
             prepare()
@@ -60,7 +60,6 @@ fun WatchMovieScreen(
         onDispose {
             viewModel.position = exoPlayer.currentPosition
             viewModel.isPlaying = exoPlayer.isPlaying
-            viewModel.mediaItem = exoPlayer.currentMediaItem
             exoPlayer.release()
         }
     }

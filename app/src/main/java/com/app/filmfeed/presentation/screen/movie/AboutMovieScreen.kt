@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -39,7 +40,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.MediaItem
 import androidx.navigation.NavController
 import com.app.filmfeed.R
 import com.app.filmfeed.Route
@@ -61,7 +61,6 @@ fun AboutScreen(
 
     LaunchedEffect(Unit) {
         viewModel.currentMovieId = movie.id
-        viewModel.mediaItem = MediaItem.fromUri(movie.movieURL)
     }
 
     Box {
@@ -144,16 +143,25 @@ fun AboutScreen(
             item { MovieFinancialsCard(movie.budget,movie.boxOffice) }
             item { Spacer(Modifier.height(60.dp)) }
         }
-        Box(
-            modifier = Modifier.fillMaxHeight(),
-            contentAlignment = Alignment.BottomCenter
+        Row(
+            modifier = Modifier.fillMaxHeight().padding(horizontal = 8.dp).offset(y = (-20).dp),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ){
             Button(
-                onClick = { navController.navigate(Route.WatchMovie.createRoute(id)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .offset(y = (-20).dp)
+                onClick = { navController.navigate(Route.Watch.createRoute(id,false)) },
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary.copy(0.8f)),
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    cnt[8],
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+            Button(
+                onClick = { navController.navigate(Route.Watch.createRoute(id,true)) },
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary.copy(0.8f)),
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     cnt[0],

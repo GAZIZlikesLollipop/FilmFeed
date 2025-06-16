@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Bookmark
@@ -36,13 +36,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -60,9 +58,9 @@ fun BaseScreen(movieViewModel: MovieViewModel){
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     Scaffold(
         topBar = {
-            if(currentRoute != Route.WatchMovie.route) {
+            if(currentRoute != Route.Watch.route) {
                 when(currentRoute){
-                    Route.Search.route -> SearchTopBar(navController)
+                    Route.Search.route -> SearchTopBar(movieViewModel)
                     else -> BaseTopBar(navController,movieViewModel)
                 }
             }
@@ -96,17 +94,11 @@ fun BaseTopBar(
     val name = when(currentRoute){
         Route.Main.route -> ams[0]
         Route.My.route -> ams[1]
-        Route.Search.route -> ams[2]
         Route.Members.route -> if(viewModel.isActor) membs[1] else membs[2]
         else -> ""
     }
     val barColor by animateColorAsState(
-        targetValue =
-            if(
-                currentRoute != Route.Main.route &&
-                currentRoute != Route.My.route &&
-                currentRoute != Route.Search.route
-            ) Color.Transparent else MaterialTheme.colorScheme.surfaceContainer,
+        targetValue = if(currentRoute != Route.Main.route && currentRoute != Route.My.route) Color.Transparent else MaterialTheme.colorScheme.surfaceContainer,
     )
     TopAppBar(
         title = {
@@ -146,61 +138,65 @@ fun BaseTopBar(
 }
 
 @Composable
-fun SearchTopBar(
-    navController: NavController
-){
-    var searchText by rememberSaveable { mutableStateOf("") }
+fun SearchTopBar(viewModel: MovieViewModel){
     val cnt = stringArrayResource(R.array.search_cnt)
-    Row(modifier = Modifier.fillMaxWidth()){
-        Card(
-            modifier = Modifier.padding(12.dp),
-            shape = RoundedCornerShape(36.dp),
-        ) {
-            TextField(
-                value = searchText,
-                onValueChange = { searchText = it },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp),
-                trailingIcon = {
-                    Row() {
-                        VerticalDivider(
-                            thickness = 2.dp,
-                            modifier = Modifier.height(12.dp)
-                        )
-                        IconButton(
-                            onClick = {
-
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Tune,
-                                contentDescription = ""
+    val focusManager = LocalFocusManager.current
+    TopAppBar(
+        title = {
+            Card(
+                modifier = Modifier.offset(x = (-8).dp),
+                shape = RoundedCornerShape(20.dp),
+            ) {
+                TextField(
+                    value = viewModel.searchText,
+                    onValueChange = { viewModel.searchText = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = {
+                        Row {
+                            VerticalDivider(
+                                thickness = 2.dp,
+                                modifier = Modifier.height(50.dp)
                             )
+                            IconButton(
+                                onClick = { viewModel.showFilterSheet = true }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Tune,
+                                    contentDescription = ""
+                                )
+                            }
                         }
-                    }
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Rounded.Search,
-                        contentDescription = "",
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Search,
+                            contentDescription = "",
+                        )
+                    },
+                    singleLine = true,
+                    placeholder = {
+                        Text(
+                            cnt[0],
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    },
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent
+                    ),
+                    textStyle = MaterialTheme.typography.bodyLarge,
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                        }
                     )
-                },
-                singleLine = true,
-                placeholder = {
-                    Text(
-                        cnt[0],
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                },
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    errorIndicatorColor = Color.Transparent
-                ),
-                textStyle = MaterialTheme.typography.bodyLarge
-            )
-        }
-    }
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(Color.Transparent)
+    )
 }
 
 data class BarItem(
@@ -264,7 +260,6 @@ fun BaseBottomBar(
                     indicatorColor = Color.Transparent,
                     disabledIconColor = Color.Transparent
                 ),
-                modifier = Modifier.offset(y = 4.dp)
             )
         }
     }

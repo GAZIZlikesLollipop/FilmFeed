@@ -44,7 +44,6 @@ fun MainScreen(
 ) {
     val apiState by viewModel.apiState.collectAsState()
     val movies by viewModel.movies.collectAsState()
-    val refreshing by viewModel.isRefreshing.collectAsState()
     val cnt = stringArrayResource(R.array.main_cnt)
 
     LaunchedEffect(Unit) {
@@ -57,7 +56,7 @@ fun MainScreen(
         is ApiState.Success -> {
             val cats = stringArrayResource(R.array.main_screen_categories)
             PullToRefreshBox(
-                isRefreshing = refreshing,
+                isRefreshing = viewModel.isRefreshing,
                 onRefresh = {
                     viewModel.getMovies()
                 },

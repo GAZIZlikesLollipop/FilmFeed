@@ -14,7 +14,7 @@ import com.app.filmfeed.presentation.screen.SearchScreen
 import com.app.filmfeed.presentation.screen.member.MemberScreen
 import com.app.filmfeed.presentation.screen.member.MembersScreen
 import com.app.filmfeed.presentation.screen.movie.AboutScreen
-import com.app.filmfeed.presentation.screen.movie.WatchMovieScreen
+import com.app.filmfeed.presentation.screen.movie.WatchScreen
 
 @Composable
 fun Navigation(
@@ -35,7 +35,8 @@ fun Navigation(
         composable(Route.Search.route){
             SearchScreen(
                 viewModel = movieViewModel,
-                paddingValues = padding
+                paddingValues = padding,
+                navController = navController
             )
         }
         composable(
@@ -46,10 +47,16 @@ fun Navigation(
             AboutScreen(id,navController,movieViewModel)
         }
         composable(
-            route = Route.WatchMovie.route,
-            arguments = listOf(navArgument("id"){type = NavType.LongType})
+            route = Route.Watch.route,
+            arguments = listOf(
+                navArgument("movieId"){type = NavType.LongType},
+                navArgument("isMovie"){type = NavType.BoolType}
+            )
         ){
-            WatchMovieScreen(it.arguments?.getLong("id") ?: 0, movieViewModel)
+            WatchScreen(
+                movieId = it.arguments?.getLong("movieId") ?: 0,
+                isMovie = it.arguments?.getBoolean("isMovie") ?: false,
+                viewModel = movieViewModel)
         }
         composable(
             route = Route.Member.route,
@@ -72,7 +79,6 @@ fun Navigation(
         ){
             MembersScreen(it.arguments?.getLong("id") ?: 0,padding,navController,movieViewModel)
         }
-
     }
 }
 
@@ -80,8 +86,8 @@ sealed class Route(val route: String){
     object Main: Route("main")
     object My: Route("my")
     object Search: Route("search")
-    object WatchMovie: Route("watchMovie/{id}"){
-        fun createRoute(id: Long) = "watchMovie/${id}"
+    object Watch: Route("watch/{movieId}/{isMovie}"){
+        fun createRoute(movieId: Long,isMovie: Boolean) = "watch/$movieId/$isMovie"
     }
     object Members: Route("member/{id}"){
         fun createRoute(id: Long) = "member/${id}"

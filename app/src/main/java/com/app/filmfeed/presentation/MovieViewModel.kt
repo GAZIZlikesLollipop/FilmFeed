@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.MediaItem
 import com.app.filmfeed.data.Movie
 import com.app.filmfeed.data.MovieRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +21,6 @@ sealed interface ApiState {
 class MovieViewModel(private val movieRepository: MovieRepository): ViewModel() {
     var position by mutableLongStateOf(0L)
     var isPlaying by mutableStateOf(true)
-    var mediaItem by mutableStateOf<MediaItem?>(null)
     var isActor by mutableStateOf(true)
 
     private val _apiState: MutableStateFlow<ApiState> = MutableStateFlow(ApiState.Loading)
@@ -33,8 +31,10 @@ class MovieViewModel(private val movieRepository: MovieRepository): ViewModel() 
 
     var currentMovieId by mutableLongStateOf(0)
 
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing = _isRefreshing.asStateFlow()
+    var isRefreshing by mutableStateOf(false)
+
+    var searchText by mutableStateOf("")
+    var showFilterSheet by mutableStateOf(false)
 
     fun getMovies(){
         _apiState.value = ApiState.Loading
