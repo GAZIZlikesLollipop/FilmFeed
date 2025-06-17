@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.filmfeed.data.Movie
 import com.app.filmfeed.data.MovieRepository
+import com.app.filmfeed.utils.Filters
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -35,6 +36,8 @@ class MovieViewModel(private val movieRepository: MovieRepository): ViewModel() 
 
     var searchText by mutableStateOf("")
     var showFilterSheet by mutableStateOf(false)
+
+    var filters by mutableStateOf(Filters())
 
     fun getMovies(){
         _apiState.value = ApiState.Loading

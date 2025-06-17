@@ -2,6 +2,7 @@ package com.app.filmfeed.utils
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.app.filmfeed.data.Genre
 import com.app.filmfeed.data.MovieRepository
 import com.app.filmfeed.presentation.MovieViewModel
 import java.text.DecimalFormat
@@ -24,3 +25,18 @@ fun formatWithSpaces(number: Long): String {
     val formatter = DecimalFormat("#,###", symbols)
     return formatter.format(number)
 }
+
+data class Filters(
+    val byPopularity: Boolean = false,
+    val byNewest: Boolean = false,
+    val byHighRating: Boolean = false,
+    val byAlphabetical: Boolean = false,
+    val genres: List<Genre> = emptyList(),
+    val country: String? = null,
+    val age: Int? = null,
+
+    val fromYear: Int? = null,
+    val toYear: Int? = null,
+    val minDuration: Int? = null,
+    val maxDuration: Int? = null
+)

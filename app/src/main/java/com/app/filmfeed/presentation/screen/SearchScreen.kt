@@ -1,7 +1,10 @@
 package com.app.filmfeed.presentation.screen
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
@@ -14,16 +17,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -31,8 +38,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.unit.dp
@@ -41,6 +52,8 @@ import com.app.filmfeed.R
 import com.app.filmfeed.Route
 import com.app.filmfeed.presentation.MovieViewModel
 import com.app.filmfeed.presentation.components.WebImage
+import com.app.filmfeed.utils.Filters
+import java.time.OffsetDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,10 +62,26 @@ fun SearchScreen(
     paddingValues: PaddingValues,
     navController: NavController
 ){
-    val movies by viewModel.movies.collectAsState()
-    val filters = stringArrayResource(R.array.filters)
+    val rawMovies by viewModel.movies.collectAsState()
+    val filtersCnt = stringArrayResource(R.array.filters)
     val sorts = stringArrayResource(R.array.sorts)
     val cnt = stringArrayResource(R.array.search_cnt)
+    val countries = stringArrayResource(R.array.countries)
+    val ages = stringArrayResource(R.array.ages)
+    val movies = when {
+        viewModel.filters.byPopularity -> rawMovies.sortedByDescending { it.reviews }
+        viewModel.filters.byNewest -> rawMovies.sortedByDescending { OffsetDateTime.parse(it.createdAt).toLocalTime() }
+        viewModel.filters.byHighRating -> rawMovies.sortedBy { it.rating }
+        viewModel.filters.byAlphabetical -> rawMovies.sortedBy { it.name.lowercase() }
+
+        viewModel.filters.country != null -> rawMovies.sortedBy { it.country == viewModel.filters.country }
+        viewModel.filters.age != null -> rawMovies.sortedBy { it.age == viewModel.filters.age }
+        viewModel.filters.fromYear != null && viewModel.filters.toYear != null -> rawMovies.sortedBy { it.year >= viewModel.filters.fromYear!! && it.year <= viewModel.filters.toYear!! }
+        viewModel.filters.minDuration != null && viewModel.filters.maxDuration != null -> rawMovies.sortedBy { it.duration >= viewModel.filters.minDuration!! && it.duration <= viewModel.filters.maxDuration!! }
+//        viewModel.filters.genres.isNotEmpty() -> rawMovies.sortedBy {  }
+
+        else -> rawMovies
+    }
 
     Box {
         LazyColumn(
@@ -61,12 +90,9 @@ fun SearchScreen(
             horizontalAlignment = Alignment.Start
         ) {
             items(movies) {
-                if (it.name.replace(" ", "").lowercase()
-                        .contains(viewModel.searchText.lowercase())
-                ) {
+                if (it.name.replace(" ", "").lowercase().contains(viewModel.searchText.lowercase())) {
                     Row(
-                        modifier = Modifier.fillMaxWidth()
-                            .clickable { navController.navigate(Route.AboutMovie.createRoute(it.id)) },
+                        modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Route.AboutMovie.createRoute(it.id)) },
                         horizontalArrangement = Arrangement.SpaceAround,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -117,7 +143,6 @@ fun SearchScreen(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
-
                 ){
                     item {
                         Row(
@@ -131,8 +156,8 @@ fun SearchScreen(
                             )
                             Spacer(Modifier.weight(0.3f))
                             TextButton(
-                                onClick = {},
-                                enabled = true
+                                onClick = { viewModel.filters = Filters() },
+                                enabled = viewModel.filters != Filters()
                             ) {
                                 Text(
                                     text = cnt[2],
@@ -143,7 +168,7 @@ fun SearchScreen(
                     }
                     item {
                         Text(
-                            text = filters[0],
+                            text = filtersCnt[0],
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onBackground.copy(0.5f)
                         )
@@ -151,42 +176,124 @@ fun SearchScreen(
                         LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ){
-                            items(sorts){
+                            itemsIndexed(sorts){ ind, str ->
                                 Button(
-                                    onClick = {},
-                                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
+                                    onClick = {
+                                        when (ind) {
+                                            0 -> viewModel.filters = viewModel.filters.copy(
+                                                byPopularity = false,
+                                                byHighRating = false,
+                                                byNewest = false,
+                                                byAlphabetical = false
+                                            )
+                                            1 -> viewModel.filters = viewModel.filters.copy(byPopularity = !viewModel.filters.byPopularity)
+                                            2 -> viewModel.filters = viewModel.filters.copy(byNewest = !viewModel.filters.byNewest)
+                                            3 -> viewModel.filters = viewModel.filters.copy(byHighRating = !viewModel.filters.byHighRating)
+                                            else -> viewModel.filters = viewModel.filters.copy(byAlphabetical = !viewModel.filters.byAlphabetical)
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor =
+                                        when {
+                                            ind == 0 &&
+                                            viewModel.filters.byPopularity == false &&
+                                            viewModel.filters.byNewest == false &&
+                                            viewModel.filters.byHighRating == false &&
+                                            viewModel.filters.byAlphabetical == false -> MaterialTheme.colorScheme.secondary
+                                            ind == 1 && viewModel.filters.byPopularity != false -> MaterialTheme.colorScheme.secondary
+                                            ind == 2 && viewModel.filters.byNewest != false -> MaterialTheme.colorScheme.secondary
+                                            ind == 3 && viewModel.filters.byHighRating != false -> MaterialTheme.colorScheme.secondary
+                                            ind == 4 && viewModel.filters.byAlphabetical != false -> MaterialTheme.colorScheme.secondary
+                                            else -> MaterialTheme.colorScheme.surfaceContainerHighest
+                                        },
+                                        contentColor = when {
+                                            ind == 0 &&
+                                            viewModel.filters.byPopularity == false &&
+                                            viewModel.filters.byNewest == false &&
+                                            viewModel.filters.byHighRating == false &&
+                                            viewModel.filters.byAlphabetical == false -> MaterialTheme.colorScheme.onBackground
+                                            ind == 1 && viewModel.filters.byPopularity != false -> MaterialTheme.colorScheme.onBackground
+                                            ind == 2 && viewModel.filters.byNewest != false -> MaterialTheme.colorScheme.onBackground
+                                            ind == 3 && viewModel.filters.byHighRating != false -> MaterialTheme.colorScheme.onBackground
+                                            ind == 4 && viewModel.filters.byAlphabetical != false -> MaterialTheme.colorScheme.onBackground
+                                            else -> MaterialTheme.colorScheme.onBackground.copy(0.5f)
+                                        }
+                                    ),
+                                    enabled = true
                                 ){
                                     Text(
-                                        it,
+                                        text = str,
                                         style = MaterialTheme.typography.headlineSmall
                                     )
                                 }
                             }
                         }
                     }
-
-                    items(filters) {
-                        if(it != "Sort by"){
+                    itemsIndexed(filtersCnt) { ind, str ->
+                        var isOpen by rememberSaveable { mutableStateOf(false) }
+                        val rotateAnim by animateFloatAsState(
+                            targetValue = if(isOpen) 180f else 0f,
+                            animationSpec = tween(300)
+                        )
+                        if(str != "Sort by"){
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ){
                                 Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier.fillMaxWidth().clickable{isOpen = !isOpen},
                                     verticalAlignment = Alignment.CenterVertically
                                 ){
                                     Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.headlineSmall
+                                        text = str,
+                                        style = MaterialTheme.typography.titleLarge
                                     )
-                                    Text(
-                                        text = sorts[0],
-                                        style = MaterialTheme.typography.headlineSmall,
-                                        color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
-                                        modifier = Modifier.offset(x = (-4).dp)
+                                    Icon(
+                                        imageVector = Icons.Rounded.KeyboardArrowDown,
+                                        contentDescription = null,
+                                        modifier = Modifier.rotate(rotateAnim).size(32.dp)
                                     )
                                 }
-                                HorizontalDivider()
+                                AnimatedVisibility(
+                                    visible = isOpen,
+                                    enter = expandVertically(tween(300), initialHeight = {-it}),
+                                    exit = shrinkVertically(tween(300), targetHeight = {-it})
+                                ) {
+                                    when(ind){
+                                        1 -> {
+
+                                        }
+                                        2 -> {
+
+                                        }
+                                        3 -> {
+
+                                        }
+                                        else -> {
+                                            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                                items(if(ind == 4) countries else ages) {
+                                                    Button(
+                                                        onClick = {
+                                                            if(ind == 4) {
+                                                                viewModel.filters = viewModel.filters.copy(country = it)
+                                                            }else{
+                                                                viewModel.filters = viewModel.filters.copy(age = it.toInt())
+                                                            }
+                                                        },
+                                                        colors = ButtonDefaults.buttonColors(
+                                                            containerColor = if(viewModel.filters.country == it) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHighest,
+                                                            contentColor = if(viewModel.filters.country == it) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onBackground.copy(0.5f)
+                                                        )
+                                                    ) {
+                                                        Text(
+                                                            if(ind == 4) it else "$it+",
+                                                            style = MaterialTheme.typography.titleLarge
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }else{
                             Text(
@@ -196,7 +303,6 @@ fun SearchScreen(
                             )
                         }
                     }
-
                 }
             }
         }
