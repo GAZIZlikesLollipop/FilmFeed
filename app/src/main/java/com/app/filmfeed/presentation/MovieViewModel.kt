@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.filmfeed.Route
 import com.app.filmfeed.data.Movie
 import com.app.filmfeed.data.MovieRepository
 import com.app.filmfeed.utils.Filters
@@ -38,6 +39,7 @@ class MovieViewModel(private val movieRepository: MovieRepository): ViewModel() 
     var showFilterSheet by mutableStateOf(false)
 
     var filters by mutableStateOf(Filters())
+    var previousRoute by mutableStateOf(Route.Main.route)
 
     fun getMovies(){
         _apiState.value = ApiState.Loading

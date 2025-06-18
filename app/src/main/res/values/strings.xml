@@ -19,6 +19,10 @@
         <item>Search movie…</item>
         <item>Filters</item>
         <item>Clear</item>
+        <item>From</item>
+        <item>To</item>
+        <item>Min</item>
+        <item>Max</item>
     </string-array>
     <string-array name="about_movie">
         <item>Watch</item>
@@ -82,5 +86,28 @@
         <item>12</item>
         <item>16</item>
         <item>18</item>
+    </string-array>
+    <string-array name="genres">
+        <item>Action</item>
+        <item>Adventure</item>
+        <item>Comedy</item>
+        <item>Drama</item>
+        <item>Horror</item>
+        <item>Science Fiction</item>
+        <item>Fantasy</item>
+        <item>Thriller</item>
+        <item>Romance</item>
+        <item>Crime</item>
+        <item>Animation</item>
+        <item>Documentary</item>
+        <item>Family</item>
+        <item>Mystery</item>
+        <item>History</item>
+        <item>War</item>
+        <item>Western</item>
+        <item>Sport</item>
+        <item>Biography</item>
+        <item>Short</item>
+        <item>Musical</item>
     </string-array>
 </resources>

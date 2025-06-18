@@ -38,7 +38,8 @@ fun createHttpClient(): HttpClient {
 }
 
 class ApiService(private val httpClient: HttpClient){
-    private val BASE_URL = "http://192.168.1.9:8080"
+//    private val BASE_URL = "http://192.168.1.9:8080"
+    private val BASE_URL = "http://10.0.2.2:8080"
     suspend fun getMovies(): List<Movie> {
         return httpClient.get("$BASE_URL/movies").body()
     }

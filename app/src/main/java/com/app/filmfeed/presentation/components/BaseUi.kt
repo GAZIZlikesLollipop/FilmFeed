@@ -120,7 +120,7 @@ fun BaseTopBar(
                         when(currentRoute) {
                             Route.Members.route -> navController.navigate(Route.AboutMovie.createRoute(viewModel.currentMovieId))
                             Route.Member.route -> navController.navigate(Route.AboutMovie.createRoute(viewModel.currentMovieId))
-                            Route.AboutMovie.route -> navController.navigate(Route.Main.route)
+                            Route.AboutMovie.route -> navController.navigate(viewModel.previousRoute)
                             else -> navController.popBackStack()
                         }
                     }

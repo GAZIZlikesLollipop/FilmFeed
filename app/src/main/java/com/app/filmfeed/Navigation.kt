@@ -2,10 +2,12 @@ package com.app.filmfeed
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.app.filmfeed.presentation.MovieViewModel
 import com.app.filmfeed.presentation.screen.MainScreen
@@ -22,6 +24,17 @@ fun Navigation(
     padding: PaddingValues,
     navController: NavHostController
 ){
+    val currentBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry.value?.destination?.route
+    LaunchedEffect(currentRoute) {
+        if(
+            currentRoute == Route.Main.route ||
+            currentRoute == Route.My.route ||
+            currentRoute == Route.Search.route
+        ){
+            movieViewModel.previousRoute = currentRoute
+        }
+    }
     NavHost(
         navController = navController,
         startDestination = Route.Main.route
