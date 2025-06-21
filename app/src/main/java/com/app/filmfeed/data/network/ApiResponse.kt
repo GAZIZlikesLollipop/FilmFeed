@@ -1,4 +1,4 @@
-package com.app.filmfeed.data
+package com.app.filmfeed.data.network
 
 import kotlinx.serialization.Serializable
 
@@ -52,20 +52,4 @@ data class Member(
     val featuredFilms: List<Movie>,
     val createdAt: String = "",
     val updatedAt: String = ""
-)
-
-data class User(
-    val id: Long,
-    val name: String,
-    val avatarURL: String,
-    val watchedMovies: Map<Movie, UserMovies>,
-    val downloadMovies: Map<Movie, UserMovies>
-)
-
-data class UserMovies(
-    val rating: Double,
-    val isWatched: Boolean,
-    val isInMy: Boolean,
-    val durProgress: Long,
-    val watchedDate: String
 )

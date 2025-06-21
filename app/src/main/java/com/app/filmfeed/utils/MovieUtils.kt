@@ -2,17 +2,21 @@ package com.app.filmfeed.utils
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.app.filmfeed.data.Genre
-import com.app.filmfeed.data.MovieRepository
+import com.app.filmfeed.data.network.Genre
+import com.app.filmfeed.data.repository.MovieRepository
+import com.app.filmfeed.data.repository.UserDataRepository
 import com.app.filmfeed.presentation.MovieViewModel
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 
-class MovieViewModelFactory(private val movieRepository: MovieRepository): ViewModelProvider.Factory {
+class MovieViewModelFactory(
+    private val movieRepository: MovieRepository,
+    private val userDataRepository: UserDataRepository
+): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(MovieViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return MovieViewModel(movieRepository) as T
+            return MovieViewModel(movieRepository,userDataRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

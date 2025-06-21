@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlinSerialization)
+    id("com.google.protobuf") version "0.9.4"
 }
 
 android {
@@ -77,4 +78,21 @@ dependencies {
     implementation(libs.ktor.client.okhttp) // <-- ДОБАВЬТЕ ЭТУ СТРОКУ для плагинов!
     // Kotlinx Serialization (если еще нет)
     implementation(libs.kotlinx.serialization.json)
+    //Proto dat store
+    implementation(libs.androidx.datastore) // или более новая версия
+    implementation(libs.protobuf.javalite)
+}
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.21.12" // Соответствует версии protobuf-javalite
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                create("java") {
+                    option("lite") // Используем "lite" для Android, это уменьшает размер кода
+                }
+            }
+        }
+    }
 }

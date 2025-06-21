@@ -7,7 +7,6 @@
     </string-array>
     <string-array name="main_screen_categories">
         <item>Continue Watching</item>
-        <item>For you</item>
         <item>New Releases</item>
         <item>You wanted to see</item>
         <item>Trending</item>
@@ -34,6 +33,11 @@
         <item>Film finances</item>
         <item>from the budget</item>
         <item>Trailer</item>
+        <item>Evaluate</item>
+        <item>I\'ll watch</item>
+        <item>Download</item>
+        <item>Favorite</item>
+        <item>Viewed</item>
     </string-array>
     <string-array name="member_cnt">
         <item>Filmography</item>

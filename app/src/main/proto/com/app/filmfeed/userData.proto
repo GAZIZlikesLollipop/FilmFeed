@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option java_package = "com.app.filmfeed";
+option java_multiple_files = true;
+
+message UserData {
+  map<int64,UserMovie> watchLaterMovies = 1;
+  map<int64,UserMovie> watchedMovies= 2;
+  map<int64,UserMovie> downloadedMovies= 3;
+  map<int64,UserMovie> favoriteMovies= 4;
+}
+
+message UserMovie {
+  optional double rating = 1;
+  bool isWatched = 2;
+  int64 durationProgress = 3;
+  optional string lastWatchedData = 4;
+}

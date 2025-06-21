@@ -1,5 +1,6 @@
 package com.app.filmfeed.presentation.screen.movie
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,11 +14,16 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Paid
+import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -110,6 +116,56 @@ fun AboutScreen(
                     Text(
                         movie.genres.joinToString(" • "){it.name}
                     )
+                }
+                Spacer(Modifier.height(12.dp))
+            }
+            item {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    item{}
+                    repeat(5){
+                        val icon = when(it){
+                            0 -> Icons.Rounded.Star
+                            1 -> Icons.Rounded.Bookmark
+                            2 -> Icons.Rounded.Download
+                            3 -> Icons.Rounded.Favorite
+                            else -> Icons.Rounded.Visibility
+                        }
+                        val text = when(it){
+                            0 -> cnt[9]
+                            1 -> cnt[10]
+                            2 -> cnt[11]
+                            3 -> cnt[12]
+                            else -> cnt[13]
+                        }
+                        val callback = {
+                            when (it) {
+                                else -> {}
+                            }
+                        }
+                        item {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                                modifier = Modifier.clickable{callback()}
+                            ) {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = text,
+                                    tint = MaterialTheme.colorScheme.onBackground.copy(0.37f),
+                                    modifier = Modifier.size(36.dp)
+                                )
+                                Text(
+                                    text = text,
+                                    color = MaterialTheme.colorScheme.onBackground.copy(0.37f)
+                                )
+                            }
+                        }
+                    }
+                    item{}
                 }
                 Spacer(Modifier.height(12.dp))
             }

@@ -15,7 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.Bookmarks
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Tune
@@ -218,7 +218,7 @@ fun BaseBottomBar(
         ),
         BarItem(
             name = names[1],
-            icon = Icons.Rounded.Bookmark,
+            icon = Icons.Rounded.Bookmarks,
             route = Route.My.route
         ),
         BarItem(

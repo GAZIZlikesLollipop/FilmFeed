@@ -69,7 +69,7 @@ fun MainScreen(
                 ) {
                     item {
                         TwoColumnTextRow(
-                            firstText = cats[4],
+                            firstText = cats[3],
                             secondText = cnt[0]
                         ) {
 

@@ -25,8 +25,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Article
 import androidx.compose.material.icons.automirrored.rounded.Help
@@ -57,8 +55,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -70,19 +66,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.app.filmfeed.R
 import com.app.filmfeed.Route
-import com.app.filmfeed.data.Genre
+import com.app.filmfeed.data.network.Genre
 import com.app.filmfeed.presentation.MovieViewModel
+import com.app.filmfeed.presentation.components.IntTextField
 import com.app.filmfeed.presentation.components.WebImage
 import com.app.filmfeed.utils.Filters
 import java.time.OffsetDateTime
@@ -102,7 +96,6 @@ fun SearchScreen(
     val ages = stringArrayResource(R.array.ages)
     val genres = stringArrayResource(R.array.genres)
     val gnrs = remember { mutableStateListOf<Genre>(*viewModel.filters.genres.toTypedArray()) }
-    val focusManager = LocalFocusManager.current
     val movies = when {
         viewModel.filters.byPopularity -> rawMovies.sortedByDescending { it.reviews }
         viewModel.filters.byNewest -> rawMovies.sortedByDescending { OffsetDateTime.parse(it.createdAt).toLocalTime() }
@@ -351,133 +344,53 @@ fun SearchScreen(
                                             }
                                         }
                                         2 -> {
-                                            var toYear by rememberSaveable { mutableStateOf("") }
-                                            var fromYear by rememberSaveable { mutableStateOf("") }
                                             Row(
                                                 modifier = Modifier.fillMaxWidth(),
                                                 horizontalArrangement = Arrangement.SpaceBetween,
                                                 verticalAlignment = Alignment.CenterVertically
                                             ){
-                                                Text(
-                                                    cnt[3],
-                                                    style = MaterialTheme.typography.titleLarge,
-                                                    color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
-                                                )
-                                                Spacer(Modifier.weight(0.1f))
-                                                TextField(
-                                                    value = fromYear,
-                                                    onValueChange = {
-                                                        fromYear = it
-                                                        if(fromYear.isNotBlank()) {
-                                                            viewModel.filters = viewModel.filters.copy(fromYear = fromYear.toInt())
-                                                        }
-                                                    },
-                                                    shape = RoundedCornerShape(24.dp),
-                                                    singleLine = true,
-                                                    keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
-                                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
-                                                    textStyle = MaterialTheme.typography.titleLarge,
-                                                    colors = TextFieldDefaults.colors(
-                                                        focusedIndicatorColor = Color.Transparent,
-                                                        unfocusedIndicatorColor = Color.Transparent,
-                                                        disabledIndicatorColor = Color.Transparent,
-                                                        errorIndicatorColor = Color.Transparent
-                                                    ),
-                                                    modifier = Modifier.weight(0.5f).height(50.dp),
-                                                )
-                                                Spacer(Modifier.weight(0.1f))
-                                                Text(
-                                                    cnt[4],
-                                                    style = MaterialTheme.typography.titleLarge,
-                                                    color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
-                                                )
-                                                Spacer(Modifier.weight(0.1f))
-                                                TextField(
-                                                    value = toYear,
-                                                    onValueChange = {
-                                                        toYear = it
-                                                        if(toYear.isNotBlank()) {
-                                                            viewModel.filters = viewModel.filters.copy(toYear = toYear.toInt())
-                                                        }
-                                                    },
-                                                    shape = RoundedCornerShape(24.dp),
-                                                    singleLine = true,
-                                                    keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
-                                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
-                                                    colors = TextFieldDefaults.colors(
-                                                        focusedIndicatorColor = Color.Transparent,
-                                                        unfocusedIndicatorColor = Color.Transparent,
-                                                        disabledIndicatorColor = Color.Transparent,
-                                                        errorIndicatorColor = Color.Transparent
-                                                    ),
-                                                    textStyle = MaterialTheme.typography.titleLarge,
-                                                    modifier = Modifier.weight(0.5f).height(50.dp),
-                                                )
+                                                repeat(2) { ind ->
+                                                    IntTextField(
+                                                        headText = if(ind == 0) cnt[3] else cnt[4],
+                                                        onValueChange = {
+                                                            if(ind == 0) {
+                                                                viewModel.filters =
+                                                                    viewModel.filters.copy(fromYear = it.toInt())
+                                                            }else{
+                                                                viewModel.filters =
+                                                                    viewModel.filters.copy(toYear = it.toInt())
+                                                            }
+                                                        },
+                                                        modifier = Modifier.weight(0.5f)
+                                                    )
+                                                    if(ind == 0){
+                                                        Spacer(Modifier.weight(0.1f))
+                                                    }
+                                                }
                                             }
                                         }
                                         3 -> {
-                                            var minDur by rememberSaveable { mutableStateOf("") }
-                                            var maxDur by rememberSaveable { mutableStateOf("") }
                                             Row(
                                                 modifier = Modifier.fillMaxWidth(),
                                                 horizontalArrangement = Arrangement.SpaceBetween,
                                                 verticalAlignment = Alignment.CenterVertically
                                             ){
-                                                Text(
-                                                    cnt[5],
-                                                    style = MaterialTheme.typography.titleLarge,
-                                                    color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
-                                                )
-                                                Spacer(Modifier.weight(0.1f))
-                                                TextField(
-                                                    value = maxDur,
-                                                    onValueChange = {
-                                                        maxDur = it
-                                                        if(maxDur.isNotBlank()) {
-                                                            viewModel.filters = viewModel.filters.copy(minDuration = maxDur.toInt())
-                                                        }
-                                                    },
-                                                    shape = RoundedCornerShape(24.dp),
-                                                    singleLine = true,
-                                                    keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
-                                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
-                                                    textStyle = MaterialTheme.typography.bodyLarge,
-                                                    colors = TextFieldDefaults.colors(
-                                                        focusedIndicatorColor = Color.Transparent,
-                                                        unfocusedIndicatorColor = Color.Transparent,
-                                                        disabledIndicatorColor = Color.Transparent,
-                                                        errorIndicatorColor = Color.Transparent
-                                                    ),
-                                                    modifier = Modifier.weight(0.5f).height(75.dp),
-                                                )
-                                                Spacer(Modifier.weight(0.1f))
-                                                Text(
-                                                    cnt[6],
-                                                    style = MaterialTheme.typography.titleLarge,
-                                                    color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
-                                                )
-                                                Spacer(Modifier.weight(0.1f))
-                                                TextField(
-                                                    value = minDur,
-                                                    onValueChange = {
-                                                        minDur = it
-                                                        if(minDur.isNotBlank()) {
-                                                            viewModel.filters = viewModel.filters.copy(maxDuration = minDur.toInt())
-                                                        }
-                                                    },
-                                                    shape = RoundedCornerShape(24.dp),
-                                                    singleLine = true,
-                                                    keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
-                                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
-                                                    colors = TextFieldDefaults.colors(
-                                                        focusedIndicatorColor = Color.Transparent,
-                                                        unfocusedIndicatorColor = Color.Transparent,
-                                                        disabledIndicatorColor = Color.Transparent,
-                                                        errorIndicatorColor = Color.Transparent
-                                                    ),
-                                                    textStyle = MaterialTheme.typography.bodyLarge,
-                                                    modifier = Modifier.weight(0.5f).height(75.dp),
-                                                )
+                                                repeat(2) { ind ->
+                                                    IntTextField(
+                                                        headText = if(ind == 0) cnt[5] else cnt[6],
+                                                        onValueChange = {
+                                                            if(ind == 0) {
+                                                                viewModel.filters = viewModel.filters.copy(minDuration = it.toInt())
+                                                            }else{
+                                                                viewModel.filters = viewModel.filters.copy(maxDuration = it.toInt())
+                                                            }
+                                                        },
+                                                        modifier = Modifier.weight(0.5f)
+                                                    )
+                                                    if(ind == 0){
+                                                        Spacer(Modifier.weight(0.1f))
+                                                    }
+                                                }
                                             }
                                         }
                                         else -> {

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,17 +15,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -34,8 +45,8 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.app.filmfeed.R
 import com.app.filmfeed.Route
-import com.app.filmfeed.data.Movie
-import com.app.filmfeed.data.MovieMember
+import com.app.filmfeed.data.network.Movie
+import com.app.filmfeed.data.network.MovieMember
 import com.app.filmfeed.presentation.MovieViewModel
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -232,6 +243,38 @@ fun TwoColumnTextRow(
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp)
+        )
+    }
+}
+@Composable
+fun IntTextField(
+    headText: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+){
+    var value by rememberSaveable { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        Text(
+            headText,
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
+        )
+        Spacer(Modifier.weight(0.1f))
+        TextField(
+            value = value,
+            onValueChange = {
+                value = it
+                if (value.isNotBlank()) { onValueChange(value) }
+            },
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            singleLine = true,
+            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
+            modifier = Modifier.weight(0.5f).height(60.dp),
         )
     }
 }

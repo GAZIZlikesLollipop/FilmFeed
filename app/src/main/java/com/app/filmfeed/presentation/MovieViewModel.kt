@@ -7,8 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.filmfeed.Route
-import com.app.filmfeed.data.Movie
-import com.app.filmfeed.data.MovieRepository
+import com.app.filmfeed.data.network.Movie
+import com.app.filmfeed.data.repository.MovieRepository
+import com.app.filmfeed.data.repository.UserDataRepository
 import com.app.filmfeed.utils.Filters
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +21,10 @@ sealed interface ApiState {
     data class Success(val movies: List<Movie>): ApiState
 }
 
-class MovieViewModel(private val movieRepository: MovieRepository): ViewModel() {
+class MovieViewModel(
+    private val movieRepository: MovieRepository,
+    private val userDataRepository: UserDataRepository
+): ViewModel() {
     var position by mutableLongStateOf(0L)
     var isPlaying by mutableStateOf(true)
     var isActor by mutableStateOf(true)
@@ -53,4 +57,30 @@ class MovieViewModel(private val movieRepository: MovieRepository): ViewModel() 
             }
         }
     }
+//    fun addToWatchLater(id: Long,movie: UserMovie){
+//        viewModelScope.launch {
+//            val map = userDataRepository.userData.first().watchLaterMoviesMap.toMutableMap()
+//            map.put(id,movie)
+//            userDataRepository.updateWatchLaterMovie(map.toMap())
+//        }
+//    }
+//    fun addToFavorite(id: Long,movie: UserMovie){
+//        viewModelScope.launch {
+//            val map = userDataRepository.userData.first().favoriteMoviesMap.toMutableMap()
+//            map.put(id,movie)
+//            userDataRepository.updateFavoriteMovie(map.toMap())
+//        }
+//    }
+//    fun markAWatched(id: Long,movie: UserMovie){
+//        viewModelScope.launch {
+//            val map = userDataRepository.userData.first().watchedMoviesMap.toMutableMap()
+//            map.put(id,movie)
+//            userDataRepository.updateWatchedMovie(map.toMap())
+//        }
+//    }
+//    fun evaluateMovie(id: Long,rating: Double){
+//        viewModelScope.launch {
+//
+//        }
+//    }
 }
