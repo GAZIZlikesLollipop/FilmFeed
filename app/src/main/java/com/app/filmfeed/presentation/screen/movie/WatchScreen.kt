@@ -14,24 +14,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.app.filmfeed.UserMovie
 import com.app.filmfeed.presentation.MovieViewModel
 
 @Composable
 fun WatchScreen(
-    movieId: Long,
-    isMovie: Boolean,
-    viewModel: MovieViewModel
+    viewModel: MovieViewModel,
+    movieId: Long
 ){
     val context = LocalContext.current
-    val movies by viewModel.movies.collectAsState()
-    val movie = movies.find { it.id == movieId }!!
+    val continueWatching by viewModel.continueWatching.collectAsState()
+    val downloadedMovies by viewModel.downloadedMovies.collectAsState()
 
     val exoPlayer = remember(context) {
         ExoPlayer.Builder(context).build().apply {
-            setMediaItem(if(isMovie) MediaItem.fromUri(movie.movieURL) else MediaItem.fromUri(movie.trailerURL))
+            viewModel.mediaItem?.let { setMediaItem(it) }
             seekTo(viewModel.position)
             playWhenReady = viewModel.isPlaying
             prepare()
@@ -58,6 +57,21 @@ fun WatchScreen(
     }
     DisposableEffect(Unit) {
         onDispose {
+            if(downloadedMovies.containsKey(movieId)){
+                val map = downloadedMovies.toMutableMap()
+                val userMovie = map[movieId]?.toBuilder()
+                    ?.setDurationProgress(exoPlayer.currentPosition)
+                    ?.build() ?: UserMovie.newBuilder().setDurationProgress(exoPlayer.currentPosition).build()
+                map.put(movieId,userMovie)
+                viewModel.updateDownloaded(map)
+            }else {
+                val map = continueWatching.toMutableMap()
+                val userMovie = map[movieId]?.toBuilder()
+                    ?.setDurationProgress(exoPlayer.currentPosition)
+                    ?.build() ?: UserMovie.newBuilder().setDurationProgress(exoPlayer.currentPosition).build()
+                map.put(movieId,userMovie)
+                viewModel.updateContinueWatching(map)
+            }
             viewModel.position = exoPlayer.currentPosition
             viewModel.isPlaying = exoPlayer.isPlaying
             exoPlayer.release()

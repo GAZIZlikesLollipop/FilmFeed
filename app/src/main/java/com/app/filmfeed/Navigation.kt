@@ -43,7 +43,7 @@ fun Navigation(
             MainScreen(movieViewModel,navController,padding)
         }
         composable(Route.My.route){
-            MyScreen()
+            MyScreen(movieViewModel,navController,padding)
         }
         composable(Route.Search.route){
             SearchScreen(
@@ -61,15 +61,12 @@ fun Navigation(
         }
         composable(
             route = Route.Watch.route,
-            arguments = listOf(
-                navArgument("movieId"){type = NavType.LongType},
-                navArgument("isMovie"){type = NavType.BoolType}
-            )
+            arguments = listOf(navArgument("movieId"){type = NavType.LongType})
         ){
             WatchScreen(
                 movieId = it.arguments?.getLong("movieId") ?: 0,
-                isMovie = it.arguments?.getBoolean("isMovie") ?: false,
-                viewModel = movieViewModel)
+                viewModel = movieViewModel
+            )
         }
         composable(
             route = Route.Member.route,
@@ -99,8 +96,8 @@ sealed class Route(val route: String){
     object Main: Route("main")
     object My: Route("my")
     object Search: Route("search")
-    object Watch: Route("watch/{movieId}/{isMovie}"){
-        fun createRoute(movieId: Long,isMovie: Boolean) = "watch/$movieId/$isMovie"
+    object Watch: Route("watch/{movieId}"){
+        fun createRoute(movieId: Long) = "watch/$movieId"
     }
     object Members: Route("member/{id}"){
         fun createRoute(id: Long) = "member/${id}"

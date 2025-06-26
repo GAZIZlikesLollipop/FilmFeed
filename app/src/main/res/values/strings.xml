@@ -7,6 +7,7 @@
     </string-array>
     <string-array name="main_screen_categories">
         <item>Continue Watching</item>
+        <item>For you</item>
         <item>New Releases</item>
         <item>You wanted to see</item>
         <item>Trending</item>
@@ -113,5 +114,17 @@
         <item>Biography</item>
         <item>Short</item>
         <item>Musical</item>
+    </string-array>
+    <string-array name="api_states">
+        <item>Downloading…</item>
+        <item>Error</item>
+        <item>Downloaded</item>
+        <item>Paused</item>
+    </string-array>
+    <string-array name="my_categories">
+        <item>Watch Later</item>
+        <item>Downloads</item>
+        <item>Favorites</item>
+        <item>Watched and ratings</item>
     </string-array>
 </resources>

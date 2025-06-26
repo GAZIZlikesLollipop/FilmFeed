@@ -98,7 +98,7 @@ fun BaseTopBar(
         else -> ""
     }
     val barColor by animateColorAsState(
-        targetValue = if(currentRoute != Route.Main.route && currentRoute != Route.My.route) Color.Transparent else MaterialTheme.colorScheme.surfaceContainer,
+        targetValue = if(currentRoute != Route.Main.route) Color.Transparent else MaterialTheme.colorScheme.surfaceContainer,
     )
     TopAppBar(
         title = {
@@ -244,7 +244,7 @@ fun BaseBottomBar(
                         Icon(
                             imageVector = it.icon,
                             contentDescription = it.name,
-                            modifier = Modifier.size(36.dp)
+                            modifier = Modifier.size(32.dp)
                         )
                         Text(
                             it.name,

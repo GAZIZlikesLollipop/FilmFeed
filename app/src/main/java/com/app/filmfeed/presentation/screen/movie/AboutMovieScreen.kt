@@ -1,5 +1,7 @@
 package com.app.filmfeed.presentation.screen.movie
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,14 +22,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.PauseCircle
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -43,16 +49,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.MediaItem
 import androidx.navigation.NavController
 import com.app.filmfeed.R
 import com.app.filmfeed.Route
+import com.app.filmfeed.UserMovie
+import com.app.filmfeed.presentation.ApiState
 import com.app.filmfeed.presentation.MovieViewModel
 import com.app.filmfeed.presentation.components.MovieMembers
 import com.app.filmfeed.presentation.components.WebImage
 import com.app.filmfeed.utils.formatWithSpaces
+import com.google.protobuf.Timestamp
+import kotlinx.coroutines.delay
+import java.time.Instant
 import kotlin.math.roundToInt
 
 @Composable
@@ -64,6 +77,23 @@ fun AboutScreen(
     val movies by viewModel.movies.collectAsState()
     val movie = movies.find { it.id == id }!!
     val cnt = stringArrayResource(R.array.about_movie)
+    val context = LocalContext.current
+
+    val watchedMovies by viewModel.watchedMovies.collectAsState()
+    val favoriteMovies by viewModel.favoriteMovies.collectAsState()
+    val watchLater by viewModel.watchLater.collectAsState()
+    val downloadedMovies by viewModel.downloadedMovies.collectAsState()
+    val downloadState by viewModel.downloadState.collectAsState()
+    val downloadStatus by viewModel.downloadStatus.collectAsState()
+    val apiStates = stringArrayResource(R.array.api_states)
+    val continueWatching by viewModel.continueWatching.collectAsState()
+
+    LaunchedEffect(downloadState) {
+        while(downloadState !is ApiState.Initial && downloadState !is ApiState.Success) {
+            viewModel.getDownloadState(context)
+            delay(100)
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.currentMovieId = movie.id
@@ -80,7 +110,7 @@ fun AboutScreen(
                     url = movie.posterURL,
                     text = movie.name,
                     cntScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
             item {
@@ -126,41 +156,69 @@ fun AboutScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     item{}
-                    repeat(5){
-                        val icon = when(it){
+                    repeat(5){ index ->
+                        val icon = when(index){
                             0 -> Icons.Rounded.Star
                             1 -> Icons.Rounded.Bookmark
-                            2 -> Icons.Rounded.Download
+                            2 -> when(downloadStatus) {
+                                apiStates[1] -> Icons.Rounded.Error
+                                apiStates[2] -> Icons.Rounded.CheckCircle
+                                apiStates[3] -> Icons.Rounded.PauseCircle
+                                else -> Icons.Rounded.Download
+                            }
                             3 -> Icons.Rounded.Favorite
                             else -> Icons.Rounded.Visibility
                         }
-                        val text = when(it){
+                        val text = when(index){
                             0 -> cnt[9]
                             1 -> cnt[10]
-                            2 -> cnt[11]
+                            2 -> if(downloadState is ApiState.Initial) cnt[11] else downloadStatus
                             3 -> cnt[12]
                             else -> cnt[13]
                         }
-                        val callback = {
-                            when (it) {
-                                else -> {}
-                            }
-                        }
                         item {
+                            val enabled =
+                                when(index){
+                                    0 -> id in watchedMovies && watchedMovies[id]?.rating != 0.0
+                                    1 -> id in watchLater
+                                    2 -> id in downloadedMovies
+                                    3 -> id in favoriteMovies
+                                    else -> id in watchedMovies
+                                }
+                            val callback = {
+                                when (index) {
+                                    0 -> if(enabled) viewModel.deleteGrade(id) else viewModel.evaluateMovie(id,9.4)
+                                    1 -> if(enabled) viewModel.deleteWatchLater(id) else viewModel.addToWatchLater(id)
+                                    2 -> if(enabled) viewModel.deleteDownloaded(context,id) else viewModel.downloadMovie(context,id)
+                                    3 -> if(enabled) viewModel.deleteFavorite(id) else viewModel.addToFavorite(id)
+                                    else -> if(enabled) viewModel.deleteWatched(id) else viewModel.addToWatched(id)
+                                }
+                            }
+                            val colorAnim by animateColorAsState(
+                                targetValue = if(enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(0.37f),
+                                animationSpec = tween(300)
+                            )
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(4.dp),
-                                modifier = Modifier.clickable{callback()}
+                                modifier = if(index == 2 && downloadState !is ApiState.Initial) Modifier else Modifier.clickable { callback() }
                             ) {
-                                Icon(
-                                    imageVector = icon,
-                                    contentDescription = text,
-                                    tint = MaterialTheme.colorScheme.onBackground.copy(0.37f),
-                                    modifier = Modifier.size(36.dp)
-                                )
+                                if(index == 2 && downloadState is ApiState.Loading){
+                                    CircularProgressIndicator(
+                                        color = MaterialTheme.colorScheme.onBackground.copy(0.35f),
+                                        modifier = Modifier.size(36.dp)
+                                    )
+                                }else {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = text,
+                                        tint = colorAnim,
+                                        modifier = Modifier.size(36.dp)
+                                    )
+                                }
                                 Text(
                                     text = text,
-                                    color = MaterialTheme.colorScheme.onBackground.copy(0.37f)
+                                    color = colorAnim
                                 )
                             }
                         }
@@ -205,22 +263,49 @@ fun AboutScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ){
             Button(
-                onClick = { navController.navigate(Route.Watch.createRoute(id,false)) },
+                onClick = {
+                    viewModel.position = 0
+                    viewModel.mediaItem = MediaItem.fromUri(movie.trailerURL)
+                    navController.navigate(Route.Watch.createRoute(id))
+                },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary.copy(0.8f)),
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    cnt[8],
+                    text = cnt[8],
                     style = MaterialTheme.typography.titleLarge
                 )
             }
             Button(
-                onClick = { navController.navigate(Route.Watch.createRoute(id,true)) },
+                onClick = {
+                    if(continueWatching.containsKey(id)) {
+                        val map = continueWatching.toMutableMap()
+                        val now = Instant.now()
+                        val userMovie = map[id]?.toBuilder()
+                            ?.setLastWatchedData(
+                                Timestamp.newBuilder()
+                                    .setSeconds(now.epochSecond)
+                                    .setNanos(now.nano)
+                                    .build()
+                            )
+                            ?.build() ?: UserMovie.newBuilder().setLastWatchedData(
+                            Timestamp.newBuilder()
+                                .setSeconds(now.epochSecond)
+                                .setNanos(now.nano)
+                                .build()
+                            ).build()
+                        map.put(id,userMovie)
+                        viewModel.updateContinueWatching(map.toMap())
+                        viewModel.position = continueWatching[id]?.durationProgress ?: 0
+                    }
+                    viewModel.mediaItem = MediaItem.fromUri(movie.movieURL)
+                    navController.navigate(Route.Watch.createRoute(id))
+                },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary.copy(0.8f)),
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    cnt[0],
+                    text = cnt[0],
                     style = MaterialTheme.typography.titleLarge
                 )
             }

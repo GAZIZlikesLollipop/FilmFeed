@@ -82,11 +82,7 @@ fun MainScreen(
                         ) {
                             items(movies) {
                                 MovieCard(it) {
-                                    navController.navigate(
-                                        Route.AboutMovie.createRoute(
-                                            it.id
-                                        )
-                                    )
+                                    navController.navigate(Route.AboutMovie.createRoute(it.id))
                                 }
                             }
                         }
@@ -94,7 +90,6 @@ fun MainScreen(
                 }
             }
         }
-
         is ApiState.Loading -> {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -128,5 +123,6 @@ fun MainScreen(
                 }
             }
         }
+        is ApiState.Initial -> {}
     }
 }

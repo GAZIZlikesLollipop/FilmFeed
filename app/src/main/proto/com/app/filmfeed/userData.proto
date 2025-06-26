@@ -3,16 +3,18 @@ syntax = "proto3";
 option java_package = "com.app.filmfeed";
 option java_multiple_files = true;
 
+import "google/protobuf/timestamp.proto";
+
 message UserData {
-  map<int64,UserMovie> watchLaterMovies = 1;
-  map<int64,UserMovie> watchedMovies= 2;
-  map<int64,UserMovie> downloadedMovies= 3;
-  map<int64,UserMovie> favoriteMovies= 4;
+  repeated int64 watchLaterMovies = 1;
+  map<int64,UserMovie> watchedMovies = 2;
+  map<int64,UserMovie> downloadedMovies = 3;
+  repeated int64 favoriteMovies = 4;
+  map<int64,UserMovie> continueWatchMovies = 5;
 }
 
 message UserMovie {
   optional double rating = 1;
-  bool isWatched = 2;
-  int64 durationProgress = 3;
-  optional string lastWatchedData = 4;
+  optional int64 durationProgress = 3;
+  optional google.protobuf.Timestamp lastWatchedData = 4;
 }

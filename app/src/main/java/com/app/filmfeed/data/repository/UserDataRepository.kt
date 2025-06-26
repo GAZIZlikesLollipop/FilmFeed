@@ -8,24 +8,25 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserDataRepo {
     val userData: Flow<UserData>
-    suspend fun updateWatchLaterMovie(data: Map<Long,UserMovie>)
+    suspend fun updateWatchLaterMovie(data: List<Long>)
     suspend fun updateWatchedMovie(data: Map<Long,UserMovie>)
     suspend fun updateDownloadedMovie(data: Map<Long,UserMovie>)
-    suspend fun updateFavoriteMovie(data: Map<Long,UserMovie>)
+    suspend fun updateFavoriteMovie(data: List<Long>)
+    suspend fun updateContinueWatchedMovie(data: Map<Long,UserMovie>)
 
-    suspend fun deleteWatchLaterMovie(movieId: Long)
     suspend fun deleteWatchedMovie(movieId: Long)
     suspend fun deleteDownloadedMovie(movieId: Long)
-    suspend fun deleteFavoriteMovie(movieId: Long)
+    suspend fun deleteContinueWatchedMovie(movieId: Long)
 }
 
 class UserDataRepository(context: Context) : UserDataRepo {
     private val dataStore = context.userDataStore
     override val userData: Flow<UserData> = dataStore.data
-    override suspend fun updateFavoriteMovie(data: Map<Long, UserMovie>) {
+    override suspend fun updateFavoriteMovie(data: List<Long>) {
         dataStore.updateData {
             it.toBuilder()
-                .putAllFavoriteMovies(data)
+                .clearFavoriteMovies()
+                .addAllFavoriteMovies(data)
                 .build()
         }
     }
@@ -43,10 +44,19 @@ class UserDataRepository(context: Context) : UserDataRepo {
                 .build()
         }
     }
-    override suspend fun updateWatchLaterMovie(data: Map<Long, UserMovie>) {
+    override suspend fun updateWatchLaterMovie(data: List<Long>) {
         dataStore.updateData {
             it.toBuilder()
-                .putAllWatchLaterMovies(data)
+                .clearWatchLaterMovies()
+                .addAllWatchLaterMovies(data)
+                .build()
+        }
+    }
+
+    override suspend fun updateContinueWatchedMovie(data: Map<Long, UserMovie>) {
+        dataStore.updateData {
+            it.toBuilder()
+                .putAllContinueWatchMovies(data)
                 .build()
         }
     }
@@ -59,26 +69,18 @@ class UserDataRepository(context: Context) : UserDataRepo {
         }
     }
 
-    override suspend fun deleteFavoriteMovie(movieId: Long) {
-        dataStore.updateData {
-            it.toBuilder()
-                .removeFavoriteMovies(movieId)
-                .build()
-        }
-    }
-
-    override suspend fun deleteWatchLaterMovie(movieId: Long) {
-        dataStore.updateData {
-            it.toBuilder()
-                .removeWatchLaterMovies(movieId)
-                .build()
-        }
-    }
-
     override suspend fun deleteWatchedMovie(movieId: Long) {
         dataStore.updateData {
             it.toBuilder()
                 .removeWatchedMovies(movieId)
+                .build()
+        }
+    }
+
+    override suspend fun deleteContinueWatchedMovie(movieId: Long) {
+        dataStore.updateData {
+            it.toBuilder()
+                .removeContinueWatchMovies(movieId)
                 .build()
         }
     }
