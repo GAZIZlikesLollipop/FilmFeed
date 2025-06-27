@@ -14,6 +14,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import com.app.filmfeed.DownloadedMovie
 import com.app.filmfeed.R
 import com.app.filmfeed.Route
 import com.app.filmfeed.UserMovie
@@ -93,7 +94,7 @@ class MovieViewModel(
     val downloadedMovies = userData.map { it.downloadedMoviesMap }.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
-        emptyMap<Long,UserMovie>()
+        emptyMap<Long, DownloadedMovie>()
     )
 
     val continueWatching = userData.map { it.continueWatchMoviesMap }.stateIn(
@@ -118,27 +119,28 @@ class MovieViewModel(
     fun addToWatchLater(movieId: Long){
         val list = watchLater.value.toMutableList()
         list.add(movieId)
-        viewModelScope.launch { userDataRepository.updateWatchLaterMovie(list.toList()) }
+        viewModelScope.launch { userDataRepository.updateWatchLaterMovies(list.toList()) }
     }
     fun addToFavorite(movieId: Long){
         val list = favoriteMovies.value.toMutableList()
         list.add(movieId)
-        viewModelScope.launch { userDataRepository.updateFavoriteMovie(list.toList()) }
+        viewModelScope.launch { userDataRepository.updateFavoriteMovies(list.toList()) }
     }
     fun updateContinueWatching(data: Map<Long, UserMovie>){
         viewModelScope.launch {
-            userDataRepository.updateContinueWatchedMovie(data)
+            userDataRepository.updateContinueWatchedMovies(data)
         }
     }
-    fun updateDownloaded(data: Map<Long, UserMovie>){
+    fun updateDownloaded(data: Map<Long, DownloadedMovie>){
         viewModelScope.launch {
-            userDataRepository.updateDownloadedMovie(data)
+            userDataRepository.updateDownloadedMovies(data)
         }
     }
     fun addToWatched(movieId: Long){
         val map = watchedMovies.value.toMutableMap()
         val now = Instant.now()
         val userMovie = map[movieId]?.toBuilder()
+            ?.setIsWatched(true)
             ?.setLastWatchedData(
                 Timestamp.newBuilder()
                     .setSeconds(now.epochSecond)
@@ -146,6 +148,7 @@ class MovieViewModel(
                     .build()
             )
             ?.build()?: UserMovie.newBuilder()
+                .setIsWatched(true)
                 .setLastWatchedData(
                     Timestamp.newBuilder()
                         .setSeconds(now.epochSecond)
@@ -154,7 +157,7 @@ class MovieViewModel(
                 ).build()
         map.put(movieId,userMovie)
         viewModelScope.launch {
-            userDataRepository.updateWatchedMovie(map.toMap())
+            userDataRepository.updateWatchedMovies(map.toMap())
         }
     }
     fun getDownloadState(context: Context){
@@ -170,11 +173,7 @@ class MovieViewModel(
                     val status = cursor.getInt(statusIndex)
 
                     when (status) {
-                        DownloadManager.STATUS_PENDING -> {
-                            _downloadState.value = ApiState.Loading
-                            _downloadStatus.value =  states[0]
-                        }
-                        DownloadManager.STATUS_RUNNING -> {
+                        DownloadManager.STATUS_PENDING,DownloadManager.STATUS_RUNNING -> {
                             _downloadState.value = ApiState.Loading
                             _downloadStatus.value =  states[0]
                         }
@@ -195,9 +194,6 @@ class MovieViewModel(
                         }
                     }
                 }
-                _downloadState.value = ApiState.Error
-                _downloadStatus.value =  states[1]
-
             }else{
                 _downloadState.value = ApiState.Error
                 _downloadStatus.value =  states[1]
@@ -214,17 +210,23 @@ class MovieViewModel(
         context: Context,
         movieId: Long
     ){
+        val movie = movies.value.find { it.id == movieId }
         _downloadState.value = ApiState.Loading
         val map = downloadedMovies.value.toMutableMap()
-        map.put(movieId, UserMovie.getDefaultInstance())
-        val movie = movies.value.find { it.id == movieId }
+        val posterFile = "${movie?.name}.${movie?.posterURL?.substringAfterLast(".")}".replace(" ","").lowercase()
+        val downloadedMovie = DownloadedMovie.newBuilder()
+            .setName(movie?.name)
+            .setDuration(movie?.duration ?: 0)
+            .setPosterPath(File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),posterFile).toUri().toString())
+            .build()
+        map.put(movieId, downloadedMovie)
         val fileName = "${movie?.name}.mp4".replace(" ","").lowercase()
         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val posterReq = DownloadManager.Request(movie?.posterURL?.toUri())
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-        posterReq.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_PICTURES,"${movie?.name}.${movie?.posterURL?.substringAfterLast(".")}".replace(" ","").lowercase())
+        posterReq.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_PICTURES,posterFile)
         val movieReq = DownloadManager.Request(movie?.movieURL?.toUri())
             .setTitle(fileName)
             .setDescription("Downloading...")
@@ -236,8 +238,7 @@ class MovieViewModel(
         downloadManager.enqueue(posterReq)
         Toast.makeText(context, "Download is started...", Toast.LENGTH_SHORT).show()
         viewModelScope.launch {
-            map.put(movieId, UserMovie.getDefaultInstance())
-            userDataRepository.updateDownloadedMovie(map.toMap())
+            userDataRepository.updateDownloadedMovies(map.toMap())
         }
     }
     fun evaluateMovie(
@@ -263,18 +264,23 @@ class MovieViewModel(
                         .build()
                 ).build()
         map.put(movieId,userMovie)
-        viewModelScope.launch { userDataRepository.updateWatchedMovie(map.toMap()) }
+        viewModelScope.launch { userDataRepository.updateWatchedMovies(map.toMap()) }
     }
     fun deleteWatchLater(movieId: Long){
         val list = watchLater.value.toMutableList()
         list.remove(movieId)
         viewModelScope.launch {
-            userDataRepository.updateWatchLaterMovie(list.toList())
+            userDataRepository.updateWatchLaterMovies(list.toList())
         }
     }
     fun deleteWatched(movieId: Long){
+        val map = watchedMovies.value.toMutableMap()
+        val userMovie = map[movieId]?.toBuilder()
+            ?.setIsWatched(false)
+            ?.build() ?: UserMovie.newBuilder().setIsWatched(false).build()
+        map.put(movieId,userMovie)
         viewModelScope.launch {
-            userDataRepository.deleteWatchedMovie(movieId)
+            userDataRepository.updateWatchedMovies(map)
         }
     }
     fun deleteDownloaded(
@@ -293,7 +299,7 @@ class MovieViewModel(
         val list = favoriteMovies.value.toMutableList()
         list.remove(movieId)
         viewModelScope.launch {
-            userDataRepository.updateFavoriteMovie(list.toList())
+            userDataRepository.updateFavoriteMovies(list.toList())
         }
     }
     fun deleteGrade(movieId: Long){
@@ -301,7 +307,7 @@ class MovieViewModel(
         val userMovie = map[movieId]?.toBuilder()?.setRating(0.0)?.build() ?: UserMovie.newBuilder().setRating(0.0).build()
         map.put(movieId,userMovie)
         viewModelScope.launch {
-            userDataRepository.updateWatchedMovie(map.toMap())
+            userDataRepository.updateWatchedMovies(map.toMap())
         }
     }
 }

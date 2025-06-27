@@ -8,13 +8,21 @@ import "google/protobuf/timestamp.proto";
 message UserData {
   repeated int64 watchLaterMovies = 1;
   map<int64,UserMovie> watchedMovies = 2;
-  map<int64,UserMovie> downloadedMovies = 3;
+  map<int64,DownloadedMovie> downloadedMovies = 3;
   repeated int64 favoriteMovies = 4;
   map<int64,UserMovie> continueWatchMovies = 5;
 }
 
 message UserMovie {
-  optional double rating = 1;
+  bool isWatched = 1;
+  optional double rating = 2;
   optional int64 durationProgress = 3;
   optional google.protobuf.Timestamp lastWatchedData = 4;
+}
+
+message DownloadedMovie {
+  string name = 1;
+  int32 duration = 2;
+  string posterPath = 3;
+  optional int64 durationProgress = 4;
 }

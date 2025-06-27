@@ -183,7 +183,7 @@ fun AboutScreen(
                                     1 -> id in watchLater
                                     2 -> id in downloadedMovies
                                     3 -> id in favoriteMovies
-                                    else -> id in watchedMovies
+                                    else -> id in watchedMovies && watchedMovies[id]?.isWatched == true
                                 }
                             val callback = {
                                 when (index) {

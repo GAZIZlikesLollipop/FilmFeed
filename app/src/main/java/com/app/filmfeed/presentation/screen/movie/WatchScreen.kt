@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.app.filmfeed.DownloadedMovie
 import com.app.filmfeed.UserMovie
 import com.app.filmfeed.presentation.MovieViewModel
 
@@ -61,7 +62,7 @@ fun WatchScreen(
                 val map = downloadedMovies.toMutableMap()
                 val userMovie = map[movieId]?.toBuilder()
                     ?.setDurationProgress(exoPlayer.currentPosition)
-                    ?.build() ?: UserMovie.newBuilder().setDurationProgress(exoPlayer.currentPosition).build()
+                    ?.build() ?: DownloadedMovie.newBuilder().setDurationProgress(exoPlayer.currentPosition).build()
                 map.put(movieId,userMovie)
                 viewModel.updateDownloaded(map)
             }else {

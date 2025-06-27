@@ -47,6 +47,7 @@
     <string-array name="error">
         <item>Oops something went wrong, please try to update</item>
         <item>Update</item>
+        <item>Error, tap to delete</item>
     </string-array>
     <string-array name="filters">
         <item>Sort by</item>
@@ -126,5 +127,8 @@
         <item>Downloads</item>
         <item>Favorites</item>
         <item>Watched and ratings</item>
+    </string-array>
+    <string-array name="my_cnt">
+        <item>You don\'t have any movies in this list</item>
     </string-array>
 </resources>

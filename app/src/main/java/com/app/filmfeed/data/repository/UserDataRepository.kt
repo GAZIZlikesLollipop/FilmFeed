@@ -1,6 +1,7 @@
 package com.app.filmfeed.data.repository
 
 import android.content.Context
+import com.app.filmfeed.DownloadedMovie
 import com.app.filmfeed.UserData
 import com.app.filmfeed.UserMovie
 import com.app.filmfeed.data.userDataStore
@@ -8,11 +9,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserDataRepo {
     val userData: Flow<UserData>
-    suspend fun updateWatchLaterMovie(data: List<Long>)
-    suspend fun updateWatchedMovie(data: Map<Long,UserMovie>)
-    suspend fun updateDownloadedMovie(data: Map<Long,UserMovie>)
-    suspend fun updateFavoriteMovie(data: List<Long>)
-    suspend fun updateContinueWatchedMovie(data: Map<Long,UserMovie>)
+    suspend fun updateWatchLaterMovies(data: List<Long>)
+    suspend fun updateWatchedMovies(data: Map<Long,UserMovie>)
+    suspend fun updateDownloadedMovies(data: Map<Long, DownloadedMovie>)
+    suspend fun updateFavoriteMovies(data: List<Long>)
+    suspend fun updateContinueWatchedMovies(data: Map<Long,UserMovie>)
 
     suspend fun deleteWatchedMovie(movieId: Long)
     suspend fun deleteDownloadedMovie(movieId: Long)
@@ -22,7 +23,7 @@ interface UserDataRepo {
 class UserDataRepository(context: Context) : UserDataRepo {
     private val dataStore = context.userDataStore
     override val userData: Flow<UserData> = dataStore.data
-    override suspend fun updateFavoriteMovie(data: List<Long>) {
+    override suspend fun updateFavoriteMovies(data: List<Long>) {
         dataStore.updateData {
             it.toBuilder()
                 .clearFavoriteMovies()
@@ -30,21 +31,21 @@ class UserDataRepository(context: Context) : UserDataRepo {
                 .build()
         }
     }
-    override suspend fun updateDownloadedMovie(data: Map<Long, UserMovie>) {
+    override suspend fun updateDownloadedMovies(data: Map<Long, DownloadedMovie>) {
         dataStore.updateData {
             it.toBuilder()
                 .putAllDownloadedMovies(data)
                 .build()
         }
     }
-    override suspend fun updateWatchedMovie(data: Map<Long, UserMovie>) {
+    override suspend fun updateWatchedMovies(data: Map<Long, UserMovie>) {
         dataStore.updateData {
             it.toBuilder()
                 .putAllWatchedMovies(data)
                 .build()
         }
     }
-    override suspend fun updateWatchLaterMovie(data: List<Long>) {
+    override suspend fun updateWatchLaterMovies(data: List<Long>) {
         dataStore.updateData {
             it.toBuilder()
                 .clearWatchLaterMovies()
@@ -53,7 +54,7 @@ class UserDataRepository(context: Context) : UserDataRepo {
         }
     }
 
-    override suspend fun updateContinueWatchedMovie(data: Map<Long, UserMovie>) {
+    override suspend fun updateContinueWatchedMovies(data: Map<Long, UserMovie>) {
         dataStore.updateData {
             it.toBuilder()
                 .putAllContinueWatchMovies(data)
