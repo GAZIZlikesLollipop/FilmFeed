@@ -205,7 +205,7 @@ fun AboutScreen(
                             ) {
                                 if(index == 2 && downloadState is ApiState.Loading){
                                     CircularProgressIndicator(
-                                        color = MaterialTheme.colorScheme.onBackground.copy(0.35f),
+                                        color = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(36.dp)
                                     )
                                 }else {

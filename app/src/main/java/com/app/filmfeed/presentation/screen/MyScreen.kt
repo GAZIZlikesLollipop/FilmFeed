@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -66,45 +67,43 @@ fun MyScreen(
     val error = stringArrayResource(R.array.error)
     val apiStates = stringArrayResource(R.array.api_states)
     val cnt = stringArrayResource(R.array.my_cnt)
+    var textEnabled by rememberSaveable { mutableStateOf(false) }
 
-    if(watchLater.isNotEmpty() || watchedMovies.isNotEmpty() || favoriteMovies.isNotEmpty() && downloadedMovies.isNotEmpty()) {
+    if(watchLater.isNotEmpty() || watchedMovies.isNotEmpty() || favoriteMovies.isNotEmpty() || downloadedMovies.isNotEmpty()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.Start
         ) {
             items(categories) { category ->
-                when {
-                    category == categories[0] && watchLater.isNotEmpty() -> {
-                        TwoColumnTextRow(
-                            firstText = category,
-                            secondText = stringArrayResource(R.array.main_cnt)[0],
-                        ) {}
-                    }
-
-                    category == categories[1] && downloadedMovies.isNotEmpty() -> {
-                        TwoColumnTextRow(
-                            firstText = category,
-                            secondText = stringArrayResource(R.array.main_cnt)[0],
-                        ) {}
-                    }
-
-                    category == categories[2] && favoriteMovies.isNotEmpty() -> {
-                        TwoColumnTextRow(
-                            firstText = category,
-                            secondText = stringArrayResource(R.array.main_cnt)[0],
-                        ) {}
-                    }
-
-                    category == categories[3] && watchedEnabled -> {
-                        TwoColumnTextRow(
-                            firstText = category,
-                            secondText = stringArrayResource(R.array.main_cnt)[0],
-                        ) {}
-                    }
-
-                    else -> {}
+                if(category == categories[0] && watchLater.isNotEmpty() && textEnabled) {
+                    TwoColumnTextRow(
+                        firstText = category,
+                        secondText = stringArrayResource(R.array.main_cnt)[0],
+                    ) {}
                 }
+
+                if(category == categories[1] && downloadedMovies.isNotEmpty()) {
+                    TwoColumnTextRow(
+                        firstText = category,
+                        secondText = stringArrayResource(R.array.main_cnt)[0],
+                    ) {}
+                }
+
+                if(category == categories[2] && favoriteMovies.isNotEmpty() && textEnabled) {
+                    TwoColumnTextRow(
+                        firstText = category,
+                        secondText = stringArrayResource(R.array.main_cnt)[0],
+                    ) {}
+                }
+
+                if(category == categories[3] && watchedEnabled && textEnabled) {
+                    TwoColumnTextRow(
+                        firstText = category,
+                        secondText = stringArrayResource(R.array.main_cnt)[0],
+                    ) {}
+                }
+
                 LazyRow(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -117,131 +116,130 @@ fun MyScreen(
                             else -> watchedMovies.keys.toList()
                         }
                     ) { ind ->
-                        movies.find { it.id == ind }?.let {
-                            when (category) {
-                                categories[1] -> {
-                                    val downloaded = downloadedMovies[ind]
-                                    val movie = Movie(
-                                        id = ind,
-                                        name = downloaded?.name ?: "",
-                                        posterURL = downloaded?.posterPath ?: "",
-                                        movieURL = "",
-                                        trailerURL = "",
-                                        duration = downloaded?.duration ?: 0,
-                                        age = 0,
-                                        genres = emptyList(),
-                                        rating = 0.0,
-                                        reviews = 0,
-                                        description = "",
-                                        country = "",
-                                        year = 0,
-                                        budget = 0,
-                                        boxOffice = 0,
-                                        movieMembers = emptyList(),
-                                    )
-                                    Box(
-                                        modifier = Modifier.height(250.dp).width(150.dp)
-                                    ) {
-                                        MovieCard(movie) {
-                                            if (downloadState is ApiState.Success || downloadState is ApiState.Initial) {
-                                                val dir =
-                                                    context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)
-                                                viewModel.position =
-                                                    downloaded?.durationProgress ?: 0
-                                                viewModel.mediaItem = MediaItem.fromUri(
-                                                    File(
-                                                        dir,
-                                                        "${it.name}.mp4".replace(" ", "")
-                                                            .lowercase()
-                                                    ).toUri()
+                        when (category) {
+                            categories[1] -> {
+                                val downloaded = downloadedMovies[ind]
+                                val movie = Movie(
+                                    id = ind,
+                                    name = downloaded?.name ?: "",
+                                    posterURL = downloaded?.posterPath ?: "",
+                                    movieURL = "",
+                                    trailerURL = "",
+                                    duration = downloaded?.duration ?: 0,
+                                    age = 0,
+                                    genres = emptyList(),
+                                    rating = 0.0,
+                                    reviews = 0,
+                                    description = "",
+                                    country = "",
+                                    year = 0,
+                                    budget = 0,
+                                    boxOffice = 0,
+                                    movieMembers = emptyList(),
+                                )
+                                Box(
+                                    modifier = Modifier.height(250.dp).width(150.dp)
+                                ) {
+                                    MovieCard(movie) {
+                                        if (downloadState is ApiState.Success || downloadState is ApiState.Initial) {
+                                            val dir = context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)
+                                            viewModel.position = downloaded?.durationProgress ?: 0
+                                            viewModel.mediaItem = MediaItem.fromUri(File(dir, "${downloaded?.name}.mp4".replace(" ", "").lowercase()).toUri())
+                                            navController.navigate(Route.Watch.createRoute(ind))
+                                        }
+                                    }
+                                    when (downloadState) {
+                                        is ApiState.Success -> {
+                                            Column(
+                                                modifier = Modifier.align(Alignment.BottomCenter),
+                                                horizontalAlignment = Alignment.End,
+                                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                                            ){
+                                                Text(
+                                                    "${downloaded?.duration?.div(3600)} h ${(downloaded?.duration?.rem(3600))?.div(60)} min",
+                                                    style = MaterialTheme.typography.titleLarge,
+                                                    color = MaterialTheme.colorScheme.onBackground.copy(0.35f)
                                                 )
-                                                navController.navigate(Route.Watch.createRoute(it.id))
+                                                LinearProgressIndicator(
+                                                    progress = { downloaded?.durationProgress?.toFloat()?.div(downloaded.duration.toFloat()) ?: 0f },
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                )
                                             }
                                         }
-                                        when (downloadState) {
-                                            is ApiState.Success -> {}
-                                            is ApiState.Error -> {
-                                                Surface(
-                                                    color = MaterialTheme.colorScheme.onBackground.copy(
-                                                        0.25f
-                                                    ),
-                                                    modifier = Modifier.clickable {
-                                                        viewModel.deleteDownloaded(
-                                                            context,
-                                                            ind
-                                                        )
-                                                    },
-                                                    shape = RoundedCornerShape(0.dp)
-                                                ) {
-                                                    Column(
-                                                        modifier = Modifier.fillMaxSize(),
-                                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                                        verticalArrangement = Arrangement.Center
-                                                    ) {
-                                                        Icon(
-                                                            imageVector = Icons.Rounded.ErrorOutline,
-                                                            contentDescription = null,
-                                                            modifier = Modifier.size(32.dp),
-                                                            tint = MaterialTheme.colorScheme.primaryContainer
-                                                        )
-                                                        Spacer(Modifier.height(8.dp))
-                                                        Text(
-                                                            error[2],
-                                                            style = MaterialTheme.typography.titleLarge,
-                                                            color = MaterialTheme.colorScheme.primaryContainer
-                                                        )
-                                                    }
-                                                }
-                                            }
-
-                                            is ApiState.Loading -> {
-                                                Box(
+                                        is ApiState.Error -> {
+                                            Surface(
+                                                color = MaterialTheme.colorScheme.onBackground.copy(0.25f),
+                                                modifier = Modifier.clickable {
+                                                    viewModel.deleteDownloaded(context, ind)
+                                                },
+                                                shape = RoundedCornerShape(0.dp)
+                                            ) {
+                                                Column(
                                                     modifier = Modifier.fillMaxSize(),
-                                                    contentAlignment = Alignment.Center
+                                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                                    verticalArrangement = Arrangement.Center
                                                 ) {
-                                                    Column {
-                                                        CircularProgressIndicator(
-                                                            modifier = Modifier.size(36.dp),
-                                                            color = MaterialTheme.colorScheme.onBackground
-                                                        )
-                                                        Text(
-                                                            apiStates[0],
-                                                            style = MaterialTheme.typography.titleLarge,
-                                                            color = MaterialTheme.colorScheme.onBackground
-                                                        )
-                                                    }
+                                                    Icon(
+                                                        imageVector = Icons.Rounded.ErrorOutline,
+                                                        contentDescription = null,
+                                                        modifier = Modifier.size(32.dp),
+                                                        tint = MaterialTheme.colorScheme.primaryContainer
+                                                    )
+                                                    Spacer(Modifier.height(8.dp))
+                                                    Text(
+                                                        error[2],
+                                                        style = MaterialTheme.typography.titleLarge,
+                                                        color = MaterialTheme.colorScheme.primaryContainer
+                                                    )
                                                 }
                                             }
-
-                                            is ApiState.Initial -> {}
                                         }
+
+                                        is ApiState.Loading -> {
+                                            Box(
+                                                modifier = Modifier.fillMaxSize(),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Column {
+                                                    CircularProgressIndicator(
+                                                        modifier = Modifier.size(36.dp),
+                                                        color = MaterialTheme.colorScheme.onBackground
+                                                    )
+                                                    Text(
+                                                        apiStates[0],
+                                                        style = MaterialTheme.typography.titleLarge,
+                                                        color = MaterialTheme.colorScheme.onBackground
+                                                    )
+                                                }
+                                            }
+                                        }
+
+                                        is ApiState.Initial -> {}
                                     }
                                 }
+                            }
 
-                                categories[3] -> {
-                                    val watched = watchedMovies[ind]
-                                    if (watched?.isWatched == true || watched?.rating!! > 0.0) {
-                                        watchedEnabled = true
-                                        MovieCard(it) {
-                                            navController.navigate(
-                                                Route.AboutMovie.createRoute(
-                                                    it.id
-                                                )
-                                            )
-                                        }
-                                    } else {
-                                        watchedEnabled = false
+                            categories[3] -> {
+                                val watched = watchedMovies[ind]
+                                if (watched?.isWatched == true || watched?.rating!! > 0.0) {
+                                    watchedEnabled = true
+                                    movies.find { it.id == ind }?.let {
+                                        textEnabled = true
+                                        MovieCard(it) { navController.navigate(Route.AboutMovie.createRoute(ind)) }
+                                    } ?: {
+                                        textEnabled = false
                                     }
+                                } else {
+                                    watchedEnabled = false
                                 }
+                            }
 
-                                else -> {
-                                    MovieCard(it) {
-                                        navController.navigate(
-                                            Route.AboutMovie.createRoute(
-                                                it.id
-                                            )
-                                        )
-                                    }
+                            else -> {
+                                movies.find { it.id == ind }?.let {
+                                    textEnabled = true
+                                    MovieCard(it) { navController.navigate(Route.AboutMovie.createRoute(ind)) }
+                                } ?: {
+                                    textEnabled = false
                                 }
                             }
                         }
