@@ -24,5 +24,6 @@ message DownloadedMovie {
   string name = 1;
   int32 duration = 2;
   string posterPath = 3;
-  optional int64 durationProgress = 4;
+  int32 apiState = 4;
+  optional int64 durationProgress = 5;
 }

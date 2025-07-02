@@ -130,5 +130,11 @@
     </string-array>
     <string-array name="my_cnt">
         <item>You don\'t have any movies in this list</item>
+        <item>Delete</item>
+    </string-array>
+    <string-array name="alert">
+        <item>Yes</item>
+        <item>No</item>
+        <item>Are you sure you want to delete downloaded movie?</item>
     </string-array>
 </resources>

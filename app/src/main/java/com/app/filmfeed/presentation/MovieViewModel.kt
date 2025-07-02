@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import com.app.filmfeed.DownloadedMovie
-import com.app.filmfeed.R
 import com.app.filmfeed.Route
 import com.app.filmfeed.UserMovie
 import com.app.filmfeed.data.network.Movie
@@ -52,12 +51,6 @@ class MovieViewModel(
     private val _apiState: MutableStateFlow<ApiState> = MutableStateFlow(ApiState.Loading)
     val apiState = _apiState.asStateFlow()
 
-    private val _downloadState: MutableStateFlow<ApiState> = MutableStateFlow(ApiState.Initial)
-    val downloadState = _downloadState.asStateFlow()
-
-    private val _downloadStatus = MutableStateFlow("")
-    val downloadStatus = _downloadStatus.asStateFlow()
-
     private val _movies = MutableStateFlow(emptyList<Movie>())
     val movies = _movies.asStateFlow()
 
@@ -67,6 +60,7 @@ class MovieViewModel(
 
     var searchText by mutableStateOf("")
     var showFilterSheet by mutableStateOf(false)
+    var deleteMod by mutableStateOf(false)
 
     var filters by mutableStateOf(Filters())
     var previousRoute by mutableStateOf(Route.Main.route)
@@ -160,8 +154,7 @@ class MovieViewModel(
             userDataRepository.updateWatchedMovies(map.toMap())
         }
     }
-    fun getDownloadState(context: Context){
-        val states = context.resources.getStringArray(R.array.api_states)
+    fun getDownloadState(context: Context,movieId: Long){
         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val query = DownloadManager.Query().setFilterById(downloadId)
         var cursor: Cursor? = null
@@ -174,33 +167,42 @@ class MovieViewModel(
 
                     when (status) {
                         DownloadManager.STATUS_PENDING,DownloadManager.STATUS_RUNNING -> {
-                            _downloadState.value = ApiState.Loading
-                            _downloadStatus.value =  states[0]
+                            val map = downloadedMovies.value.toMutableMap()
+                            val userMovie = map[movieId]?.toBuilder()?.setApiState(1)?.build() ?: DownloadedMovie.newBuilder().setApiState(1).build()
+                            map.put(movieId,userMovie)
+                            updateDownloaded(map.toMap())
                         }
                         DownloadManager.STATUS_PAUSED -> {
-                            _downloadState.value = ApiState.Loading
-                            _downloadStatus.value =  states[3]
+                            val map = downloadedMovies.value.toMutableMap()
+                            val userMovie = map[movieId]?.toBuilder()?.setApiState(1)?.build() ?: DownloadedMovie.newBuilder().setApiState(1).build()
+                            map.put(movieId,userMovie)
+                            updateDownloaded(map.toMap())
                         }
                         DownloadManager.STATUS_SUCCESSFUL -> {
-                            _downloadState.value = ApiState.Success
-                            _downloadStatus.value =  states[2]
+                            val map = downloadedMovies.value.toMutableMap()
+                            val userMovie = map[movieId]?.toBuilder()?.setApiState(2)?.build() ?: DownloadedMovie.newBuilder().setApiState(1).build()
+                            map.put(movieId,userMovie)
+                            updateDownloaded(map.toMap())
                         }
                         DownloadManager.STATUS_FAILED -> {
-                            _downloadState.value = ApiState.Error
-                            _downloadStatus.value =  states[1]
-                        }
-                        else -> {
-                            _downloadStatus.value =  context.resources.getStringArray(R.array.about_movie)[11]
+                            val map = downloadedMovies.value.toMutableMap()
+                            val userMovie = map[movieId]?.toBuilder()?.setApiState(3)?.build() ?: DownloadedMovie.newBuilder().setApiState(1).build()
+                            map.put(movieId,userMovie)
+                            updateDownloaded(map.toMap())
                         }
                     }
                 }
-            }else{
-                _downloadState.value = ApiState.Error
-                _downloadStatus.value =  states[1]
+            } else {
+                val map = downloadedMovies.value.toMutableMap()
+                val userMovie = map[movieId]?.toBuilder()?.setApiState(3)?.build() ?: DownloadedMovie.newBuilder().setApiState(1).build()
+                map.put(movieId,userMovie)
+                updateDownloaded(map.toMap())
             }
         } catch(e: Exception){
-            _downloadState.value = ApiState.Error
-            _downloadStatus.value =  states[1]
+            val map = downloadedMovies.value.toMutableMap()
+            val userMovie = map[movieId]?.toBuilder()?.setApiState(3)?.build() ?: DownloadedMovie.newBuilder().setApiState(1).build()
+            map.put(movieId,userMovie)
+            updateDownloaded(map.toMap())
             Log.e("STATE ERROR",e.localizedMessage ?: "")
         } finally {
             cursor?.close()
@@ -211,10 +213,10 @@ class MovieViewModel(
         movieId: Long
     ){
         val movie = movies.value.find { it.id == movieId }
-        _downloadState.value = ApiState.Loading
         val map = downloadedMovies.value.toMutableMap()
         val posterFile = "${movie?.name}.${movie?.posterURL?.substringAfterLast(".")}".replace(" ","").lowercase()
         val downloadedMovie = DownloadedMovie.newBuilder()
+            .setApiState(0)
             .setName(movie?.name)
             .setDuration(movie?.duration ?: 0)
             .setPosterPath(File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),posterFile).toUri().toString())

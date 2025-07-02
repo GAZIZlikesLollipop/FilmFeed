@@ -1,5 +1,6 @@
 package com.app.filmfeed.presentation.screen.movie
 
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -58,7 +59,6 @@ import androidx.navigation.NavController
 import com.app.filmfeed.R
 import com.app.filmfeed.Route
 import com.app.filmfeed.UserMovie
-import com.app.filmfeed.presentation.ApiState
 import com.app.filmfeed.presentation.MovieViewModel
 import com.app.filmfeed.presentation.components.MovieMembers
 import com.app.filmfeed.presentation.components.WebImage
@@ -83,15 +83,17 @@ fun AboutScreen(
     val favoriteMovies by viewModel.favoriteMovies.collectAsState()
     val watchLater by viewModel.watchLater.collectAsState()
     val downloadedMovies by viewModel.downloadedMovies.collectAsState()
-    val downloadState by viewModel.downloadState.collectAsState()
-    val downloadStatus by viewModel.downloadStatus.collectAsState()
     val apiStates = stringArrayResource(R.array.api_states)
     val continueWatching by viewModel.continueWatching.collectAsState()
+    val apiState = downloadedMovies[id]?.apiState
 
-    LaunchedEffect(downloadState) {
-        while(downloadState !is ApiState.Initial && downloadState !is ApiState.Success) {
-            viewModel.getDownloadState(context)
-            delay(100)
+    LaunchedEffect(apiState) {
+        if(apiState != null && apiState != 0) {
+            while (apiState != 2) {
+                Log.d("APISTATE", "$apiState")
+                viewModel.getDownloadState(context, id)
+                delay(100)
+            }
         }
     }
 
@@ -160,10 +162,10 @@ fun AboutScreen(
                         val icon = when(index){
                             0 -> Icons.Rounded.Star
                             1 -> Icons.Rounded.Bookmark
-                            2 -> when(downloadStatus) {
-                                apiStates[1] -> Icons.Rounded.Error
-                                apiStates[2] -> Icons.Rounded.CheckCircle
-                                apiStates[3] -> Icons.Rounded.PauseCircle
+                            2 -> when(downloadedMovies[id]?.apiState) {
+                                3 -> Icons.Rounded.Error
+                                2 -> Icons.Rounded.CheckCircle
+                                1 -> Icons.Rounded.PauseCircle
                                 else -> Icons.Rounded.Download
                             }
                             3 -> Icons.Rounded.Favorite
@@ -172,7 +174,12 @@ fun AboutScreen(
                         val text = when(index){
                             0 -> cnt[9]
                             1 -> cnt[10]
-                            2 -> if(downloadState is ApiState.Initial) cnt[11] else downloadStatus
+                            2 -> when(downloadedMovies[id]?.apiState){
+                                3 -> apiStates[1]
+                                1 -> apiStates[0]
+                                2 -> apiStates[2]
+                                else -> cnt[11]
+                            }
                             3 -> cnt[12]
                             else -> cnt[13]
                         }
@@ -201,14 +208,14 @@ fun AboutScreen(
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(4.dp),
-                                modifier = if(index == 2 && downloadState !is ApiState.Initial) Modifier else Modifier.clickable { callback() }
+                                modifier = if(index == 2 && (downloadedMovies[id]?.apiState == 1 || downloadedMovies[id]?.apiState == 3)) Modifier else Modifier.clickable { callback() }
                             ) {
-                                if(index == 2 && downloadState is ApiState.Loading){
+                                if(index == 2 && downloadedMovies[id]?.apiState == 1){
                                     CircularProgressIndicator(
                                         color = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(36.dp)
                                     )
-                                }else {
+                                } else {
                                     Icon(
                                         imageVector = icon,
                                         contentDescription = text,
