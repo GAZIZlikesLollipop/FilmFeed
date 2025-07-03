@@ -6,7 +6,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -110,12 +109,11 @@ fun BaseTopBar(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Spacer(Modifier.weight(0.15f))
+                    Text("")
                     Text(
                         text = name,
                         style = MaterialTheme.typography.titleLarge
                     )
-                    Spacer(Modifier.weight(0.1f))
                     IconButton(
                         onClick = { viewModel.deleteMod = !viewModel.deleteMod }
                     ) {

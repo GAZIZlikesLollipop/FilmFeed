@@ -1,6 +1,5 @@
 package com.app.filmfeed.presentation.screen.movie
 
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -88,9 +87,8 @@ fun AboutScreen(
     val apiState = downloadedMovies[id]?.apiState
 
     LaunchedEffect(apiState) {
-        if(apiState != null && apiState != 0) {
+        if(apiState != null) {
             while (apiState != 2) {
-                Log.d("APISTATE", "$apiState")
                 viewModel.getDownloadState(context, id)
                 delay(100)
             }

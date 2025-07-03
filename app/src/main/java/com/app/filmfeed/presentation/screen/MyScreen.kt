@@ -168,7 +168,7 @@ fun MyScreen(
                                             2 -> {
                                                 if(viewModel.deleteMod) {
                                                     Box(
-                                                        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.onBackground.copy(0.5f)),
+                                                        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.onBackground.copy(0.45f)),
                                                         contentAlignment = Alignment.Center
                                                     ) {
                                                         Column(
@@ -178,26 +178,27 @@ fun MyScreen(
                                                             Icon(
                                                                 imageVector = Icons.Rounded.Delete,
                                                                 contentDescription = "",
-                                                                tint = MaterialTheme.colorScheme.primaryContainer,
-                                                                modifier = Modifier.size(32.dp)
+                                                                tint = MaterialTheme.colorScheme.primary,
+                                                                modifier = Modifier.size(50.dp)
                                                             )
                                                             Text(
                                                                 text = cnt[1],
-                                                                color = MaterialTheme.colorScheme.primaryContainer,
-                                                                style = MaterialTheme.typography.titleLarge
+                                                                color = MaterialTheme.colorScheme.primary,
+                                                                style = MaterialTheme.typography.headlineLarge
                                                             )
                                                         }
                                                     }
                                                 } else {
                                                     Column(
-                                                        modifier = Modifier.offset(y = 8.dp).align(Alignment.BottomCenter),
+                                                        modifier = Modifier.align(Alignment.BottomCenter),
                                                         horizontalAlignment = Alignment.End,
                                                         verticalArrangement = Arrangement.spacedBy(24.dp)
                                                     ) {
                                                         Text(
                                                             text = "${downloaded?.duration?.div(3600)} h ${(downloaded?.duration?.rem(3600))?.div(60)} min",
                                                             style = MaterialTheme.typography.titleLarge,
-                                                            color = MaterialTheme.colorScheme.onBackground.copy(0.6f)
+                                                            color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
+                                                            modifier = Modifier.offset(y = (-8).dp)
                                                         )
                                                         LinearProgressIndicator(
                                                             progress = {
@@ -211,7 +212,7 @@ fun MyScreen(
 
                                             3 -> {
                                                 Surface(
-                                                    color = MaterialTheme.colorScheme.onBackground.copy(0.25f),
+                                                    color = MaterialTheme.colorScheme.onBackground.copy(0.45f),
                                                     modifier = Modifier.clickable {
                                                         viewModel.deleteDownloaded(context, ind)
                                                     },
@@ -225,13 +226,13 @@ fun MyScreen(
                                                         Icon(
                                                             imageVector = Icons.Rounded.ErrorOutline,
                                                             contentDescription = null,
-                                                            modifier = Modifier.size(32.dp),
+                                                            modifier = Modifier.size(50.dp),
                                                             tint = MaterialTheme.colorScheme.primaryContainer
                                                         )
                                                         Spacer(Modifier.height(8.dp))
                                                         Text(
                                                             text = error[2],
-                                                            style = MaterialTheme.typography.titleLarge,
+                                                            style = MaterialTheme.typography.headlineLarge,
                                                             color = MaterialTheme.colorScheme.primaryContainer
                                                         )
                                                     }
@@ -245,12 +246,13 @@ fun MyScreen(
                                                     verticalArrangement = Arrangement.Center
                                                 ) {
                                                     CircularProgressIndicator(
-                                                        modifier = Modifier.size(36.dp),
-                                                        color = MaterialTheme.colorScheme.onBackground
+                                                        modifier = Modifier.size(50.dp),
+                                                        color = MaterialTheme.colorScheme.onBackground,
+                                                        strokeWidth = 6.dp
                                                     )
                                                     Text(
                                                         apiStates[0],
-                                                        style = MaterialTheme.typography.titleLarge,
+                                                        style = MaterialTheme.typography.headlineLarge,
                                                         color = MaterialTheme.colorScheme.onBackground
                                                     )
                                                 }

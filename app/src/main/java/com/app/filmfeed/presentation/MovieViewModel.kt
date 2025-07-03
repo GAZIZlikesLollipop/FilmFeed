@@ -194,7 +194,7 @@ class MovieViewModel(
                 }
             } else {
                 val map = downloadedMovies.value.toMutableMap()
-                val userMovie = map[movieId]?.toBuilder()?.setApiState(3)?.build() ?: DownloadedMovie.newBuilder().setApiState(1).build()
+                val userMovie = map[movieId]?.toBuilder()?.setApiState(0)?.build() ?: DownloadedMovie.newBuilder().setApiState(1).build()
                 map.put(movieId,userMovie)
                 updateDownloaded(map.toMap())
             }

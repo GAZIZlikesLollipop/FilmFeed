@@ -66,7 +66,7 @@ fun MovieCard(
             url = movie.posterURL,
             text = movie.name,
             cntScale = ContentScale.Crop,
-            modifier = Modifier.height(225.dp).width(150.dp)
+            modifier = Modifier.height(210.dp).width(150.dp)
         )
         Text(
             text = movie.name,
