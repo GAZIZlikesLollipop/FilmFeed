@@ -16,11 +16,12 @@ import com.app.filmfeed.presentation.screen.SearchScreen
 import com.app.filmfeed.presentation.screen.member.MemberScreen
 import com.app.filmfeed.presentation.screen.member.MembersScreen
 import com.app.filmfeed.presentation.screen.movie.AboutScreen
+import com.app.filmfeed.presentation.screen.movie.MoviesScreen
 import com.app.filmfeed.presentation.screen.movie.WatchScreen
 
 @Composable
 fun Navigation(
-    movieViewModel: MovieViewModel,
+    viewModel: MovieViewModel,
     padding: PaddingValues,
     navController: NavHostController
 ){
@@ -32,7 +33,7 @@ fun Navigation(
             currentRoute == Route.My.route ||
             currentRoute == Route.Search.route
         ){
-            movieViewModel.previousRoute = currentRoute
+            viewModel.previousRoute = currentRoute
         }
     }
     NavHost(
@@ -40,14 +41,14 @@ fun Navigation(
         startDestination = Route.Main.route
     ){
         composable(Route.Main.route){
-            MainScreen(movieViewModel,navController,padding)
+            MainScreen(viewModel,navController,padding)
         }
         composable(Route.My.route){
-            MyScreen(movieViewModel,navController,padding)
+            MyScreen(viewModel,navController,padding)
         }
         composable(Route.Search.route){
             SearchScreen(
-                viewModel = movieViewModel,
+                viewModel = viewModel,
                 paddingValues = padding,
                 navController = navController
             )
@@ -57,7 +58,7 @@ fun Navigation(
             arguments = listOf(navArgument("id"){type = NavType.LongType})
         ){ backStackEntry ->
             val id = backStackEntry.arguments?.getLong("id") ?: 2
-            AboutScreen(id,navController,movieViewModel)
+            AboutScreen(id,navController,viewModel)
         }
         composable(
             route = Route.Watch.route,
@@ -65,7 +66,7 @@ fun Navigation(
         ){
             WatchScreen(
                 movieId = it.arguments?.getLong("movieId") ?: 0,
-                viewModel = movieViewModel
+                viewModel = viewModel
             )
         }
         composable(
@@ -79,7 +80,7 @@ fun Navigation(
                 movieId = it.arguments?.getLong("movieId") ?: 0,
                 memberId = it.arguments?.getLong("memberId") ?: 0,
                 paddingValues = padding,
-                viewModel = movieViewModel,
+                viewModel = viewModel,
                 navController = navController
             )
         }
@@ -87,7 +88,10 @@ fun Navigation(
             route = Route.Members.route,
             arguments = listOf(navArgument("id"){type = NavType.LongType})
         ){
-            MembersScreen(it.arguments?.getLong("id") ?: 0,padding,navController,movieViewModel)
+            MembersScreen(it.arguments?.getLong("id") ?: 0,padding,navController,viewModel)
+        }
+        composable(Route.Movies.route){
+            MoviesScreen(navController, viewModel,padding)
         }
     }
 }
@@ -108,4 +112,5 @@ sealed class Route(val route: String){
     object AboutMovie: Route("aboutMovie/{id}"){
         fun createRoute(id: Long) = "aboutMovie/$id"
     }
+    object Movies: Route("movies")
 }

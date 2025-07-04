@@ -95,7 +95,7 @@ fun SearchScreen(
     val countries = stringArrayResource(R.array.countries)
     val ages = stringArrayResource(R.array.ages)
     val genres = stringArrayResource(R.array.genres)
-    val gnrs = remember { mutableStateListOf<Genre>(*viewModel.filters.genres.toTypedArray()) }
+    val gnrs = remember { mutableStateListOf(*viewModel.filters.genres.toTypedArray()) }
     val movies = when {
         viewModel.filters.byPopularity -> rawMovies.sortedByDescending { it.reviews }
         viewModel.filters.byNewest -> rawMovies.sortedByDescending { OffsetDateTime.parse(it.createdAt).toLocalTime() }
@@ -106,7 +106,7 @@ fun SearchScreen(
         viewModel.filters.age != null -> rawMovies.filter { it.age == viewModel.filters.age }
         viewModel.filters.fromYear != null && viewModel.filters.toYear != null -> rawMovies.filter { it.year >= viewModel.filters.fromYear!! && it.year <= viewModel.filters.toYear!! }
         viewModel.filters.minDuration != null && viewModel.filters.maxDuration != null -> rawMovies.filter { it.duration >= viewModel.filters.minDuration!! && it.duration <= viewModel.filters.maxDuration!! }
-        viewModel.filters.genres.isNotEmpty() -> rawMovies.filter { viewModel.filters.genres.all { genre -> it.genres.any { genre.name == it.name } } }
+        viewModel.filters.genres.isNotEmpty() -> rawMovies.filter { it -> viewModel.filters.genres.all { genre -> it.genres.any { genre.name == it.name } } }
 
         else -> rawMovies
     }

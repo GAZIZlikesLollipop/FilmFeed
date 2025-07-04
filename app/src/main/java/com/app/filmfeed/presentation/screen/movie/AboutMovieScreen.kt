@@ -141,7 +141,7 @@ fun AboutScreen(
                         )
                     }
                     Text(
-                        "${movie.duration / 3600} h ${(movie.duration % 3600) / 60} • ${movie.country}"
+                        "${(movie.duration/1000) / 3600} h ${((movie.duration/1000) % 3600) / 60} • ${movie.country}"
                     )
                     Text(
                         movie.genres.joinToString(" • "){it.name}

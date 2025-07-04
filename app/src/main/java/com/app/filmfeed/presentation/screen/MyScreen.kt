@@ -91,28 +91,44 @@ fun MyScreen(
                         TwoColumnTextRow(
                             firstText = category,
                             secondText = stringArrayResource(R.array.main_cnt)[0],
-                        ) {}
+                        ) {
+                            viewModel.mvScreenMovies.clear()
+                            viewModel.mvScreenMovies.addAll(movies.filter { watchLater.contains(it.id) })
+                            navController.navigate(Route.Movies.route)
+                        }
                     }
 
                     if (category == categories[1] && downloadedMovies.isNotEmpty()) {
                         TwoColumnTextRow(
                             firstText = category,
                             secondText = stringArrayResource(R.array.main_cnt)[0],
-                        ) {}
+                        ) {
+                            viewModel.mvScreenMovies.clear()
+                            viewModel.mvScreenMovies.addAll(movies.filter { downloadedMovies.contains(it.id) })
+                            navController.navigate(Route.Movies.route)
+                        }
                     }
 
                     if (category == categories[2] && favoriteMovies.isNotEmpty() && textEnabled) {
                         TwoColumnTextRow(
                             firstText = category,
                             secondText = stringArrayResource(R.array.main_cnt)[0],
-                        ) {}
+                        ) {
+                            viewModel.mvScreenMovies.clear()
+                            viewModel.mvScreenMovies.addAll(movies.filter { favoriteMovies.contains(it.id) })
+                            navController.navigate(Route.Movies.route)
+                        }
                     }
 
                     if (category == categories[3] && watchedEnabled && textEnabled) {
                         TwoColumnTextRow(
                             firstText = category,
                             secondText = stringArrayResource(R.array.main_cnt)[0],
-                        ) {}
+                        ) {
+                            viewModel.mvScreenMovies.clear()
+                            viewModel.mvScreenMovies.addAll(movies.filter { watchedMovies.contains(it.id) })
+                            navController.navigate(Route.Movies.route)
+                        }
                     }
 
                     LazyRow(
@@ -195,14 +211,14 @@ fun MyScreen(
                                                         verticalArrangement = Arrangement.spacedBy(24.dp)
                                                     ) {
                                                         Text(
-                                                            text = "${downloaded?.duration?.div(3600)} h ${(downloaded?.duration?.rem(3600))?.div(60)} min",
+                                                            text = "${(downloaded?.duration?.div(1000))?.div(3600)} h ${((downloaded?.duration?.div(1000))?.rem(3600))?.div(60)} min",
                                                             style = MaterialTheme.typography.titleLarge,
                                                             color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
                                                             modifier = Modifier.offset(y = (-8).dp)
                                                         )
                                                         LinearProgressIndicator(
                                                             progress = {
-                                                                downloaded?.durationProgress?.toFloat()?.div(downloaded.duration.toFloat()) ?: 0f
+                                                                downloaded?.durationProgress?.toFloat()?.div(downloaded.duration) ?: 0f
                                                             },
                                                             modifier = Modifier.fillMaxWidth(),
                                                         )
