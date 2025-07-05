@@ -54,6 +54,7 @@ fun MainScreen(
     val cnt = stringArrayResource(R.array.main_cnt)
     val continueWatching by viewModel.continueWatching.collectAsState()
     val watchLater by viewModel.watchLater.collectAsState()
+    val favorite by viewModel.favoriteGenres.collectAsState()
 
     LaunchedEffect(Unit) {
         if (movies.isEmpty()) {
@@ -125,36 +126,29 @@ fun MainScreen(
                                 }
                             }
                         }else{
-                            TwoColumnTextRow(
-                                firstText = cat,
-                                secondText = cnt[0]
-                            ) {
-                                viewModel.mvScreenMovies.clear()
-                                viewModel.mvScreenMovies.addAll(
-                                    when(cat) {
-                                        cats[1] -> movies
-                                        cats[2] -> movies.filter { it.year >= LocalDate.now().year - 1 }
-                                        cats[3] -> movies.filter { watchLater.contains(it.id) }
-                                        cats[4] -> movies.filter { it.year >= LocalDate.now().year - 1 && it.budget < it.boxOffice }
-                                        else -> movies
-                                    }
-                                )
-                                navController.navigate(Route.Movies.route)
+                            val moviesLar = when (cat) {
+                                cats[1] -> if(favorite.isNotEmpty()) movies.filter { favorite.contains(it.genres[0].name) } else movies.reversed()
+                                cats[2] -> movies.filter { it.year >= LocalDate.now().year - 1 }
+                                cats[3] -> movies.filter { watchLater.contains(it.id) }
+                                cats[4] -> movies.filter { it.year >= LocalDate.now().year - 1 && it.budget < it.boxOffice }
+                                else -> movies
+                            }
+                            if(moviesLar.isNotEmpty()) {
+                                TwoColumnTextRow(
+                                    firstText = cat,
+                                    secondText = cnt[0]
+                                ) {
+                                    viewModel.mvScreenMovies.clear()
+                                    viewModel.mvScreenMovies.addAll(moviesLar)
+                                    navController.navigate(Route.Movies.route)
+                                }
                             }
 
                             LazyRow(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                items(
-                                    when(cat){
-                                        cats[1] -> movies
-                                        cats[2] -> movies.filter { it.year >= LocalDate.now().year - 1 }
-                                        cats[3] -> movies.filter { watchLater.contains(it.id) }
-                                        cats[4] -> movies.filter { it.year >= LocalDate.now().year - 1 && it.budget < it.boxOffice }
-                                        else -> movies
-                                    }
-                                ) { movie ->
+                                items(moviesLar) { movie ->
                                     MovieCard(movie) {
                                         navController.navigate(Route.AboutMovie.createRoute(movie.id))
                                     }

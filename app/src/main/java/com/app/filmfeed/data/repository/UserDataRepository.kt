@@ -14,6 +14,7 @@ interface UserDataRepo {
     suspend fun updateDownloadedMovies(data: Map<Long, DownloadedMovie>)
     suspend fun updateFavoriteMovies(data: List<Long>)
     suspend fun updateContinueWatchedMovies(data: Map<Long,UserMovie>)
+    suspend fun updateFavoriteGenres(data: List<String>)
 
     suspend fun deleteWatchedMovie(movieId: Long)
     suspend fun deleteDownloadedMovie(movieId: Long)
@@ -23,6 +24,14 @@ interface UserDataRepo {
 class UserDataRepository(context: Context) : UserDataRepo {
     private val dataStore = context.userDataStore
     override val userData: Flow<UserData> = dataStore.data
+    override suspend fun updateFavoriteGenres(data: List<String>) {
+        dataStore.updateData {
+            it.toBuilder()
+                .clearFavoriteGenres()
+                .addAllFavoriteGenres(data)
+                .build()
+        }
+    }
     override suspend fun updateFavoriteMovies(data: List<Long>) {
         dataStore.updateData {
             it.toBuilder()

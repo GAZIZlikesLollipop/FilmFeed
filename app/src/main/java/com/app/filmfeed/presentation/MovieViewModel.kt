@@ -69,6 +69,14 @@ class MovieViewModel(
 
     val userData = userDataRepository.userData
 
+    val favoriteGenres = userData
+        .map { it.favoriteGenresList }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            emptyList<String>()
+        )
+
     val watchedMovies = userData.map { it.watchedMoviesMap }.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
@@ -120,7 +128,13 @@ class MovieViewModel(
     fun addToFavorite(movieId: Long){
         val list = favoriteMovies.value.toMutableList()
         list.add(movieId)
-        viewModelScope.launch { userDataRepository.updateFavoriteMovies(list.toList()) }
+        val list2 = favoriteGenres.value.toMutableSet()
+        movies.value.find { it.id == movieId }!!.genres.forEach {
+            list2.add(it.name)
+        }
+        viewModelScope.launch {
+            userDataRepository.updateFavoriteMovies(list.toList())
+        }
     }
     fun updateContinueWatching(data: Map<Long, UserMovie>){
         viewModelScope.launch {
@@ -302,6 +316,10 @@ class MovieViewModel(
     fun deleteFavorite(movieId: Long){
         val list = favoriteMovies.value.toMutableList()
         list.remove(movieId)
+        val list2 = favoriteGenres.value.toMutableSet()
+        movies.value.find { it.id == movieId }!!.genres.forEach {
+            list2.remove(it.name)
+        }
         viewModelScope.launch {
             userDataRepository.updateFavoriteMovies(list.toList())
         }

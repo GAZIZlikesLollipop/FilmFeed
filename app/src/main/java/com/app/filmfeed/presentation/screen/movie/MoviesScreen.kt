@@ -20,8 +20,8 @@ fun MoviesScreen(
     paddingValues: PaddingValues
 ){
     FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = Modifier.fillMaxSize().padding(paddingValues)
     ){
         viewModel.mvScreenMovies.forEach {
